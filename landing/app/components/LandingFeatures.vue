@@ -1,18 +1,18 @@
 <template>
-  <section id="features" class="py-24 px-6 bg-slate-50 border-y border-slate-200">
+  <section id="features" class="py-24 px-6 bg-bunker-50 border-y border-bunker-200">
     <div class="max-w-6xl mx-auto">
       <div class="text-center max-w-2xl mx-auto mb-16">
-        <h2 class="text-3xl font-bold tracking-tight text-slate-900 mb-4">Everything you need to scale</h2>
-        <p class="text-slate-600 text-lg">Core primitives perfectly balanced between ease-of-use and deep customization.</p>
+        <h2 class="text-3xl font-bold tracking-tight text-bunker-900 mb-4">{{ t('f_title') }}</h2>
+        <p class="text-bunker-600 text-lg">{{ t('f_desc') }}</p>
       </div>
 
       <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div v-for="feature in features" :key="feature.title" class="bg-white border border-slate-200 p-8 rounded-xl">
+        <div v-for="feature in features" :key="feature.title" class="bg-white border border-bunker-200 p-8 rounded-xl">
           <div class="w-12 h-12 bg-primary-50 rounded-lg flex items-center justify-center mb-6">
             <component :is="feature.icon" class="w-6 h-6 text-primary-600" />
           </div>
-          <h3 class="text-xl font-bold text-slate-900 mb-3">{{ feature.title }}</h3>
-          <p class="text-slate-600 leading-relaxed">{{ feature.description }}</p>
+          <h3 class="text-xl font-bold text-bunker-900 mb-3">{{ feature.title }}</h3>
+          <p class="text-bunker-600 leading-relaxed">{{ feature.description }}</p>
         </div>
       </div>
     </div>
@@ -20,7 +20,7 @@
 </template>
 
 <script setup>
-import { defineComponent, h, computed } from 'vue';
+import { computed, defineComponent, h } from 'vue';
 import { useTranslation } from '~/composables/useTranslation';
 
 const { t } = useTranslation();
