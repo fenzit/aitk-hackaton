@@ -12,7 +12,7 @@
   --color-bunker-800: #354157;
   --color-bunker-900: #30394a;
   --color-bunker-950: #12151c;
-  
+
   /* Primary color mapping for convenience */
   --color-primary-50: var(--color-bunker-50);
   --color-primary-100: var(--color-bunker-100);
