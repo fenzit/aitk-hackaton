@@ -20,7 +20,10 @@
 </template>
 
 <script setup>
-import { defineComponent, h } from 'vue';
+import { defineComponent, h, computed } from 'vue';
+import { useTranslation } from '~/composables/useTranslation';
+
+const { t } = useTranslation();
 
 const SparklesIcon = defineComponent({
   render() {
@@ -54,26 +57,26 @@ const PuzzleIcon = defineComponent({
   }
 });
 
-const features = [
+const features = computed(() => [
   {
-    title: 'AI Generation',
-    description: 'Instant access to state-of-the-art LLMs. Generate text, structured JSON, embeddings, and more in a single API call.',
+    title: t('f_1_t'),
+    description: t('f_1_d'),
     icon: SparklesIcon
   },
   {
-    title: 'Basic Functions',
-    description: 'Managed endpoints for standard tasks: summarization, classification, translation, and sentiment analysis out of the box.',
+    title: t('f_2_t'),
+    description: t('f_2_d'),
     icon: CodeIcon
   },
   {
-    title: 'Custom Domain',
-    description: 'Map your own domain to our edge endpoints. Deliver AI features to your users completely white-labeled.',
+    title: t('f_3_t'),
+    description: t('f_3_d'),
     icon: GlobeIcon
   },
   {
-    title: 'Extensibility',
-    description: 'Easily plug in your own logic through webhooks, or fine-tune models directly on our infrastructure safely and securely.',
+    title: t('f_4_t'),
+    description: t('f_4_d'),
     icon: PuzzleIcon
   }
-];
+]);
 </script>
