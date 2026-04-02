@@ -14,6 +14,5 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@nuxt/fonts',
     '@nuxt/image',
-    '@vercel/analytics'
   ]
 });
