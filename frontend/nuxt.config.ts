@@ -14,8 +14,12 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@nuxt/fonts',
     '@nuxt/image',
+    '@nuxtjs/color-mode',
     '@vercel/analytics'
   ],
+  colorMode: {
+    classSuffix: ''
+  },
   runtimeConfig: {
     public: {
       wsUrl: process.env.NUXT_PUBLIC_WS_URL || 'ws://localhost:8000/ws/city',

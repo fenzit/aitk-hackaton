@@ -1,18 +1,21 @@
 <template>
-  <section id="features" class="py-24 px-6 bg-bunker-50 border-y border-bunker-200">
+  <section id="features" class="py-24 px-6 bg-bunker-50 dark:bg-black-950 border-y border-bunker-200 dark:border-black-800">
     <div class="max-w-6xl mx-auto">
       <div class="text-center max-w-2xl mx-auto mb-16">
-        <h2 class="text-3xl font-bold tracking-tight text-bunker-900 mb-4">{{ t('f_title') }}</h2>
-        <p class="text-bunker-600 text-lg">{{ t('f_desc') }}</p>
+        <h2 class="text-3xl font-bold tracking-tight text-bunker-900 dark:text-black-50 mb-4">{{ t('f_title') }}</h2>
+        <p class="text-bunker-600 dark:text-black-300 text-lg">{{ t('f_desc') }}</p>
       </div>
 
       <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div v-for="feature in features" :key="feature.title" class="bg-white border border-bunker-200 p-8 rounded-xl">
-          <div class="w-12 h-12 bg-primary-50 rounded-lg flex items-center justify-center mb-6">
-            <component :is="feature.icon" class="w-6 h-6 text-primary-600" />
+        <div v-for="feature in features" :key="feature.title" class="bg-white dark:bg-black-950 border border-bunker-200 dark:border-black-800 p-8 rounded-xl flex flex-col">
+          <div class="w-12 h-12 bg-primary-50 dark:bg-primary-950/30 rounded-lg flex items-center justify-center mb-6">
+            <component :is="feature.icon" class="w-6 h-6 text-primary-600 dark:text-primary-400" />
           </div>
-          <h3 class="text-xl font-bold text-bunker-900 mb-3">{{ feature.title }}</h3>
-          <p class="text-bunker-600 leading-relaxed">{{ feature.description }}</p>
+          <h3 class="text-xl font-bold text-bunker-900 dark:text-black-50 mb-3">{{ feature.title }}</h3>
+          <p class="text-bunker-600 dark:text-black-300 leading-relaxed mb-6 flex-grow">{{ feature.description }}</p>
+          <div class="mt-auto overflow-hidden rounded-xl bg-bunker-50 dark:bg-black-900 border border-bunker-100 dark:border-black-800 h-40">
+            <img :src="feature.image" class="w-full h-full object-cover hover:scale-105 transition-transform duration-500" alt="Feature Image" />
+          </div>
         </div>
       </div>
     </div>
@@ -61,22 +64,26 @@ const features = computed(() => [
   {
     title: t('f_1_t'),
     description: t('f_1_d'),
-    icon: SparklesIcon
+    icon: SparklesIcon,
+    image: 'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?auto=format&fit=crop&w=800&q=80'
   },
   {
     title: t('f_2_t'),
     description: t('f_2_d'),
-    icon: CodeIcon
+    icon: CodeIcon,
+    image: 'https://images.unsplash.com/photo-1541888087525-0746830cb1ea?auto=format&fit=crop&w=800&q=80'
   },
   {
     title: t('f_3_t'),
     description: t('f_3_d'),
-    icon: GlobeIcon
+    icon: GlobeIcon,
+    image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80'
   },
   {
     title: t('f_4_t'),
     description: t('f_4_d'),
-    icon: PuzzleIcon
+    icon: PuzzleIcon,
+    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80'
   }
 ]);
 </script>

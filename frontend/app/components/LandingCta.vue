@@ -11,7 +11,7 @@
         <a href="#" class="bg-primary-600 text-white px-8 py-4 rounded-xl font-medium hover:bg-primary-500 text-lg transition-none">
           {{ t('c_start') }}
         </a>
-        <a href="#" class="bg-white/10 text-white px-8 py-4 rounded-xl font-medium hover:bg-white/20 text-lg transition-none border border-white/20">
+        <a href="#" class="bg-white dark:bg-black-950/10 text-white px-8 py-4 rounded-xl font-medium hover:bg-white dark:bg-black-950/20 text-lg transition-none border border-white/20">
           {{ t('c_demo') }}
         </a>
       </div>
