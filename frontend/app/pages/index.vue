@@ -57,9 +57,17 @@
           
           <div class="hidden md:flex items-center gap-2 bg-slate-50 dark:bg-black-950 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-black-800 hover:border-killarney-300 transition-colors cursor-pointer group relative">
             <svg class="w-5 h-5 text-slate-500 dark:text-black-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-            <select class="bg-transparent border-none text-sm font-medium text-slate-700 dark:text-black-200 outline-none cursor-pointer group-hover:text-killarney-600 appearance-none pr-6 relative z-10 w-fit">
+            <select v-if="cityData" class="bg-transparent border-none text-sm font-medium text-slate-700 dark:text-black-200 outline-none cursor-pointer group-hover:text-killarney-600 appearance-none pr-6 relative z-10 w-fit">
               <option>Алматы</option>
             </select>
+            <div v-if="isConnected" class="flex items-center gap-1.5 text-[10px] font-bold text-emerald-500 bg-emerald-50 dark:bg-emerald-950/30 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800/50">
+               <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+               ONLINE
+            </div>
+            <div v-else class="flex items-center gap-1.5 text-[10px] font-bold text-rose-500 bg-rose-50 dark:bg-rose-950/30 px-2 py-0.5 rounded-full border border-rose-200 dark:border-rose-800/50">
+               <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+               OFFLINE
+            </div>
             <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none text-slate-400 dark:text-black-500 group-hover:text-killarney-500">
                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
             </div>
@@ -185,28 +193,32 @@
           <div class="flex-1 overflow-y-auto p-5 space-y-5">
             <div>
                <h3 class="text-[10px] font-bold text-slate-400 dark:text-black-500 uppercase tracking-widest mb-1.5">ЧТО ПРОИСХОДИТ:</h3>
-               <p class="text-slate-800 dark:text-black-100 font-bold text-lg leading-tight">Тревога: критическая пробка <br><span class="text-sm text-slate-500 dark:text-black-400 font-medium">Обнаружен затор в центре</span></p>
+               <p v-if="cityData" class="text-slate-800 dark:text-black-100 font-bold text-lg leading-tight">
+                 {{ cityData.insights.problems[0] }}
+               </p>
+               <p v-else class="text-slate-400 font-bold text-lg">Загрузка данных...</p>
             </div>
             
             <div class="bg-rose-50 dark:bg-rose-950/30 p-3.5 rounded-xl border border-rose-100 flex justify-between items-center">
                <h3 class="text-[10px] font-bold text-rose-500/70 uppercase tracking-widest">НАСКОЛЬКО КРИТИЧНО:</h3>
-               <p class="text-rose-600 font-black flex items-center gap-2">ВЫСOКИЙ <span class="w-3 h-3 rounded-full bg-rose-600"></span></p>
+               <p v-if="cityData" class="text-rose-600 font-black flex items-center gap-2">
+                 {{ cityData.insights.level_ru.toUpperCase() }} 
+                 <span :class="['w-3 h-3 rounded-full', cityData.insights.level === 'HIGH' ? 'bg-rose-600' : 'bg-amber-500']"></span>
+               </p>
             </div>
             
             <div class="pt-1">
                <h3 class="text-[10px] font-bold text-slate-400 dark:text-black-500 uppercase tracking-widest mb-2.5">ЧТО ДЕЛАТЬ (AI РЕКОМЕНДАЦИЯ):</h3>
-               <ul class="space-y-2.5">
-                 <li class="flex items-center gap-3 p-2.5 bg-white dark:bg-black-950 border border-slate-200 dark:border-black-800 rounded-lg shadow-sm hover:border-killarney-400 hover:shadow-md transition-all cursor-pointer group">
-                   <div class="w-7 h-7 rounded-full bg-killarney-50 dark:bg-killarney-950/30 text-killarney-600 flex items-center justify-center shrink-0 group-hover:bg-killarney-600 group-hover:text-white transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h8M8 11h8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg></div>
-                   <span class="text-xs font-bold text-slate-700 dark:text-black-200 group-hover:text-killarney-700">Увеличить автобусы</span>
+               <ul v-if="cityData" class="space-y-2.5">
+                 <li v-for="(action, idx) in cityData.insights.actions" :key="idx" class="flex items-center gap-3 p-2.5 bg-white dark:bg-black-950 border border-slate-200 dark:border-black-800 rounded-lg shadow-sm hover:border-killarney-400 hover:shadow-md transition-all cursor-pointer group">
+                   <div class="w-7 h-7 rounded-full bg-killarney-50 dark:bg-killarney-950/30 text-killarney-600 flex items-center justify-center shrink-0 group-hover:bg-killarney-600 group-hover:text-white transition-colors">
+                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                   </div>
+                   <span class="text-xs font-bold text-slate-700 dark:text-black-200 group-hover:text-killarney-700">{{ action }}</span>
                  </li>
-                 <li class="flex items-center gap-3 p-2.5 bg-white dark:bg-black-950 border border-slate-200 dark:border-black-800 rounded-lg shadow-sm hover:border-killarney-400 hover:shadow-md transition-all cursor-pointer group">
-                   <div class="w-7 h-7 rounded-full bg-rose-50 dark:bg-rose-950/30 text-rose-600 flex items-center justify-center shrink-0 group-hover:bg-rose-600 group-hover:text-white transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg></div>
-                   <span class="text-xs font-bold text-slate-700 dark:text-black-200 group-hover:text-rose-700">Ограничить въезд</span>
-                 </li>
-                 <li class="flex items-center gap-3 p-2.5 bg-white dark:bg-black-950 border border-slate-200 dark:border-black-800 rounded-lg shadow-sm hover:border-emerald-400 hover:shadow-md transition-all cursor-pointer group">
-                   <div class="w-7 h-7 rounded-full bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 flex items-center justify-center shrink-0 group-hover:bg-emerald-600 group-hover:text-white transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg></div>
-                   <span class="text-xs font-bold text-slate-700 dark:text-black-200 group-hover:text-emerald-700">Оповестить жителей</span>
+                 <li class="mt-4 p-3 bg-indigo-50 dark:bg-indigo-950/30 rounded-xl border border-indigo-100 dark:border-indigo-900/50">
+                    <p class="text-[10px] font-black text-indigo-500 uppercase mb-1">LLM ПРЕДСКАЗАНИЕ:</p>
+                    <p class="text-[11px] font-medium text-slate-700 dark:text-black-200 leading-relaxed italic">"{{ cityData.llm_recommendation }}"</p>
                  </li>
                </ul>
             </div>
@@ -431,7 +443,10 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, onUnmounted } from 'vue'
+import { ref, watch, onMounted, onUnmounted, computed } from 'vue'
+import { useCityData } from '../composables/useCityData'
+
+const { data: cityData, isConnected } = useCityData()
 
 const isLive = ref(true)
 const isSimulation = ref(false)
@@ -595,62 +610,88 @@ useHead({
 // Mock icons mapped to heroicons or similar intuitive SVG structures
 const ActivityIcon = { template: `<svg fill="none"></svg>` }
 
-const kpis = ref([
-  { title: 'УРОВЕНЬ ТРАФИКА', value: 'КРИТИЧНО', subtitle: '88% загруженности', borderColor: 'border-t-rose-500', textColor: 'text-rose-600', image: 'https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&w=800&q=80' },
-  { title: 'КАЧЕСТВО ВОЗДУХА', value: '142 AQI', subtitle: 'Нездоровый', borderColor: 'border-t-amber-400', textColor: 'text-amber-500', image: 'https://picsum.photos/seed/factory/800/600' },
-  { title: 'ИНДЕКС ЗДОРОВЬЯ', value: '92/100', subtitle: 'Стабильно', borderColor: 'border-t-emerald-500', textColor: 'text-emerald-600', image: 'https://picsum.photos/seed/health/800/600' },
-  { title: 'АКТИВНЫЕ АЛЕРТЫ', value: '3', subtitle: 'Требуют внимания', borderColor: 'border-t-orange-500', textColor: 'text-orange-600' },
-])
+const kpis = computed(() => {
+  if (!cityData.value) {
+    return [
+      { title: 'УРОВЕНЬ ТРАФИКА', value: 'Загрузка...', subtitle: '...', borderColor: 'border-t-slate-300', textColor: 'text-slate-400' },
+      { title: 'КАЧЕСТВО ВОЗДУХА', value: 'Загрузка...', subtitle: '...', borderColor: 'border-t-slate-300', textColor: 'text-slate-400' },
+      { title: 'ИНДЕКС ЗДОРОВЬЯ', value: 'Загрузка...', subtitle: '...', borderColor: 'border-t-slate-300', textColor: 'text-slate-400' },
+      { title: 'АКТИВНЫЕ АЛЕРТЫ', value: 'Загрузка...', subtitle: '...', borderColor: 'border-t-slate-300', textColor: 'text-slate-400' },
+    ]
+  }
 
-const chart1Data = ref([45, 60, 30, 85, 90, 70, 50, 65, 80, 40, 55, 75, 45, 60, 30, 85, 90, 70, 50, 65, 80, 40, 55, 75])
-
-const isSimulating = ref(false)
-
-const triggerSim = (action) => {
-  if (isSimulating.value) return;
-  isSimulating.value = true;
+  const { metrics, insights } = cityData.value
   
-  setTimeout(() => {
-    isSimulating.value = false;
-    
-    // Dynamic WOW-effect: recalculate KPIs based on actions
-    if (action === 'close_road') {
-      kpis.value[0].value = 'ПЛОТНЫЙ';
-      kpis.value[0].subtitle = '65% загруженности';
-      kpis.value[0].textColor = 'text-amber-500';
-      kpis.value[0].borderColor = 'border-t-amber-400';
-      kpis.value[1].value = '110 AQI';
-      kpis.value[1].subtitle = 'Умеренный';
-      kpis.value[1].textColor = 'text-amber-500';
-      kpis.value[1].borderColor = 'border-t-amber-400';
-      
-      // Update charts slightly
-      chart1Data.value = chart1Data.value.map(v => Math.min(100, v + Math.floor(Math.random() * 15)));
-    } else if (action === 'add_buses') {
-      kpis.value[0].value = 'НОРМА';
-      kpis.value[0].subtitle = '45% загруженности';
-      kpis.value[0].textColor = 'text-emerald-600';
-      kpis.value[0].borderColor = 'border-t-emerald-500';
-      kpis.value[1].value = '80 AQI';
-      kpis.value[1].subtitle = 'Хороший';
-      kpis.value[1].textColor = 'text-emerald-600';
-      kpis.value[1].borderColor = 'border-t-emerald-500';
-      
-      chart1Data.value = chart1Data.value.map(v => Math.max(10, v - Math.floor(Math.random() * 20)));
-    } else if (action === 'emergency') {
-      kpis.value[0].value = 'КОЛЛАПС';
-      kpis.value[0].subtitle = '98% загруженности';
-      kpis.value[0].textColor = 'text-rose-700';
-      kpis.value[0].borderColor = 'border-t-rose-600';
-      kpis.value[1].value = '210 AQI';
-      kpis.value[1].subtitle = 'Опасно';
-      kpis.value[1].textColor = 'text-rose-600';
-      kpis.value[1].borderColor = 'border-t-rose-500';
-      kpis.value[3].value = '7'; // Active alerts spike
+  // Mapping color/severity based on backend insights
+  const trafficColor = insights.level === 'HIGH' ? 'text-rose-600' : (insights.level === 'MEDIUM' ? 'text-amber-500' : 'text-emerald-600')
+  const trafficBorder = insights.level === 'HIGH' ? 'border-t-rose-500' : (insights.level === 'MEDIUM' ? 'border-t-amber-400' : 'border-t-emerald-500')
 
-      chart1Data.value = chart1Data.value.map(v => Math.min(100, v + Math.floor(Math.random() * 40)));
-    }
-  }, 1200)
+  const airSeverity = metrics.air_quality_index > 200 ? 'Очень плохо' : (metrics.air_quality_index > 100 ? 'Нездоровый' : 'Хороший')
+  const airColor = metrics.air_quality_index > 200 ? 'text-rose-600' : (metrics.air_quality_index > 100 ? 'text-amber-500' : 'text-emerald-600')
+  const airBorder = metrics.air_quality_index > 200 ? 'border-t-rose-500' : (metrics.air_quality_index > 100 ? 'border-t-amber-400' : 'border-t-emerald-500')
+
+  return [
+    { 
+      title: 'УРОВЕНЬ ТРАФИКА', 
+      value: insights.level_ru, 
+      subtitle: `${metrics.traffic_index}% загруженности`, 
+      borderColor: trafficBorder, 
+      textColor: trafficColor, 
+      image: 'https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&w=800&q=80' 
+    },
+    { 
+      title: 'КАЧЕСТВО ВОЗДУХА', 
+      value: `${metrics.air_quality_index} AQI`, 
+      subtitle: airSeverity, 
+      borderColor: airBorder, 
+      textColor: airColor, 
+      image: 'https://picsum.photos/seed/factory/800/600' 
+    },
+    { 
+      title: 'ИНДЕКС ЗДОРОВЬЯ', 
+      value: `${insights.city_health_score}/100`, 
+      subtitle: 'Статистика', 
+      borderColor: 'border-t-emerald-500', 
+      textColor: 'text-emerald-600', 
+      image: 'https://picsum.photos/seed/health/800/600' 
+    },
+    { 
+      title: 'АКТИВНЫЕ АЛЕРТЫ', 
+      value: metrics.active_incidents.toString(), 
+      subtitle: 'Требуют внимания', 
+      borderColor: 'border-t-orange-500', 
+      textColor: 'text-orange-600' 
+    },
+  ]
+})
+
+const chart1Data = computed(() => {
+  if (!cityData.value) return Array(24).fill(0)
+  // Extract traffic_index from history
+  return cityData.value.history.map(p => p.traffic_index)
+})
+
+const isSimulating = computed(() => cityData.value?.insights.is_simulation || false)
+
+const triggerSim = async (action) => {
+  if (isSimulating.value) return;
+  
+  const config = useRuntimeConfig()
+  const scenarioMap = {
+    'close_road': 'close_road',
+    'add_buses': 'increase_buses',
+    'emergency': 'restrict_diesel' // mapping to some backend scenario
+  }
+
+  try {
+    await fetch(`${config.public.apiUrl}/api/simulate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ scenario: scenarioMap[action] || action })
+    })
+  } catch (err) {
+    console.error('Error triggering simulation:', err)
+  }
 }
 </script>
 
