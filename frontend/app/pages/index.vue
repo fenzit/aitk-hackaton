@@ -57,9 +57,17 @@
           
           <div class="hidden md:flex items-center gap-2 bg-slate-50 dark:bg-black-950 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-black-800 hover:border-killarney-300 transition-colors cursor-pointer group relative">
             <svg class="w-5 h-5 text-slate-500 dark:text-black-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-            <select class="bg-transparent border-none text-sm font-medium text-slate-700 dark:text-black-200 outline-none cursor-pointer group-hover:text-killarney-600 appearance-none pr-6 relative z-10 w-fit">
+            <select v-if="cityData" class="bg-transparent border-none text-sm font-medium text-slate-700 dark:text-black-200 outline-none cursor-pointer group-hover:text-killarney-600 appearance-none pr-6 relative z-10 w-fit">
               <option>Алматы</option>
             </select>
+            <div v-if="isConnected" class="flex items-center gap-1.5 text-[10px] font-bold text-emerald-500 bg-emerald-50 dark:bg-emerald-950/30 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800/50">
+               <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+               ONLINE
+            </div>
+            <div v-else class="flex items-center gap-1.5 text-[10px] font-bold text-rose-500 bg-rose-50 dark:bg-rose-950/30 px-2 py-0.5 rounded-full border border-rose-200 dark:border-rose-800/50">
+               <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+               OFFLINE
+            </div>
             <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none text-slate-400 dark:text-black-500 group-hover:text-killarney-500">
                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
             </div>
@@ -138,6 +146,28 @@
           <span class="font-bold tracking-wide text-sm hidden sm:block">CITY INSIGHT</span>
         </button>
 
+        <!-- Simulation UX Floating Panel -->
+        <div class="absolute bottom-6 left-4 z-40 bg-white/95 dark:bg-black-950/95 backdrop-blur-md p-4 rounded-2xl border border-slate-200 dark:border-black-800 shadow-2xl pointer-events-auto flex flex-col gap-3 min-w-[280px]">
+          <div class="flex items-center justify-between pointer-events-auto">
+             <h3 class="font-black text-slate-800 dark:text-black-100 text-[11px] sm:text-xs flex items-center gap-2 uppercase tracking-widest">
+               <span class="text-indigo-500 text-base">🎮</span> Панель симуляций
+             </h3>
+             <span v-if="isSimulating" class="text-[10px] font-bold text-indigo-500 animate-pulse bg-indigo-50 dark:bg-indigo-950/30 px-2 py-1 rounded-full border border-indigo-200 dark:border-indigo-800">ПЕРЕСЧЕТ...</span>
+          </div>
+          
+          <div class="flex sm:flex-row flex-col gap-2">
+            <button @click="triggerSim('close_road')" class="flex-1 px-3 py-2.5 bg-slate-100 dark:bg-black-900 hover:bg-slate-200 dark:hover:bg-black-800 border border-slate-200 dark:border-black-700 rounded-xl text-xs font-bold transition-all text-slate-700 dark:text-black-200 active:scale-95 flex items-center justify-center gap-2">
+              🛑 Закрыть дорогу
+            </button>
+            <button @click="triggerSim('add_buses')" class="flex-1 px-3 py-2.5 bg-emerald-50 dark:bg-emerald-950/30 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 border border-emerald-200 dark:border-emerald-800 rounded-xl text-xs font-bold transition-all text-emerald-700 dark:text-emerald-400 active:scale-95 flex items-center justify-center gap-2">
+              🚌 Добавить автобусы
+            </button>
+            <button @click="triggerSim('emergency')" class="flex-1 px-3 py-2.5 bg-rose-50 dark:bg-rose-950/30 hover:bg-rose-100 dark:hover:bg-rose-900/50 border border-rose-200 dark:border-rose-800 rounded-xl text-xs font-bold transition-all text-rose-700 dark:text-rose-400 active:scale-95 flex items-center justify-center gap-2 shadow-sm shadow-rose-500/20">
+              ⚠️ ЧП
+            </button>
+          </div>
+        </div>
+
         <!-- AI Insight Panel: Floating HUD overlay on the right -->
         <div 
           :class="['absolute bottom-0 lg:bottom-auto lg:top-16 right-0 lg:right-4 w-full lg:w-96 bg-white dark:bg-black-950/95 backdrop-blur-lg lg:rounded-2xl border-t-4 lg:border-t-0 lg:border-l-[6px] border-rose-500 shadow-2xl flex flex-col h-[400px] lg:h-[calc(100%-5rem)] z-40 pointer-events-auto transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]', 
@@ -163,28 +193,32 @@
           <div class="flex-1 overflow-y-auto p-5 space-y-5">
             <div>
                <h3 class="text-[10px] font-bold text-slate-400 dark:text-black-500 uppercase tracking-widest mb-1.5">ЧТО ПРОИСХОДИТ:</h3>
-               <p class="text-slate-800 dark:text-black-100 font-bold text-lg leading-tight">Тревога: критическая пробка <br><span class="text-sm text-slate-500 dark:text-black-400 font-medium">Обнаружен затор в центре</span></p>
+               <p v-if="cityData" class="text-slate-800 dark:text-black-100 font-bold text-lg leading-tight">
+                 {{ cityData.insights.problems[0] }}
+               </p>
+               <p v-else class="text-slate-400 font-bold text-lg">Загрузка данных...</p>
             </div>
             
             <div class="bg-rose-50 dark:bg-rose-950/30 p-3.5 rounded-xl border border-rose-100 flex justify-between items-center">
                <h3 class="text-[10px] font-bold text-rose-500/70 uppercase tracking-widest">НАСКОЛЬКО КРИТИЧНО:</h3>
-               <p class="text-rose-600 font-black flex items-center gap-2">ВЫСOКИЙ <span class="w-3 h-3 rounded-full bg-rose-600"></span></p>
+               <p v-if="cityData" class="text-rose-600 font-black flex items-center gap-2">
+                 {{ cityData.insights.level_ru.toUpperCase() }} 
+                 <span :class="['w-3 h-3 rounded-full', cityData.insights.level === 'HIGH' ? 'bg-rose-600' : 'bg-amber-500']"></span>
+               </p>
             </div>
             
             <div class="pt-1">
                <h3 class="text-[10px] font-bold text-slate-400 dark:text-black-500 uppercase tracking-widest mb-2.5">ЧТО ДЕЛАТЬ (AI РЕКОМЕНДАЦИЯ):</h3>
-               <ul class="space-y-2.5">
-                 <li class="flex items-center gap-3 p-2.5 bg-white dark:bg-black-950 border border-slate-200 dark:border-black-800 rounded-lg shadow-sm hover:border-killarney-400 hover:shadow-md transition-all cursor-pointer group">
-                   <div class="w-7 h-7 rounded-full bg-killarney-50 dark:bg-killarney-950/30 text-killarney-600 flex items-center justify-center shrink-0 group-hover:bg-killarney-600 group-hover:text-white transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h8M8 11h8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg></div>
-                   <span class="text-xs font-bold text-slate-700 dark:text-black-200 group-hover:text-killarney-700">Увеличить автобусы</span>
+               <ul v-if="cityData" class="space-y-2.5">
+                 <li v-for="(action, idx) in cityData.insights.actions" :key="idx" class="flex items-center gap-3 p-2.5 bg-white dark:bg-black-950 border border-slate-200 dark:border-black-800 rounded-lg shadow-sm hover:border-killarney-400 hover:shadow-md transition-all cursor-pointer group">
+                   <div class="w-7 h-7 rounded-full bg-killarney-50 dark:bg-killarney-950/30 text-killarney-600 flex items-center justify-center shrink-0 group-hover:bg-killarney-600 group-hover:text-white transition-colors">
+                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                   </div>
+                   <span class="text-xs font-bold text-slate-700 dark:text-black-200 group-hover:text-killarney-700">{{ action }}</span>
                  </li>
-                 <li class="flex items-center gap-3 p-2.5 bg-white dark:bg-black-950 border border-slate-200 dark:border-black-800 rounded-lg shadow-sm hover:border-killarney-400 hover:shadow-md transition-all cursor-pointer group">
-                   <div class="w-7 h-7 rounded-full bg-rose-50 dark:bg-rose-950/30 text-rose-600 flex items-center justify-center shrink-0 group-hover:bg-rose-600 group-hover:text-white transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg></div>
-                   <span class="text-xs font-bold text-slate-700 dark:text-black-200 group-hover:text-rose-700">Ограничить въезд</span>
-                 </li>
-                 <li class="flex items-center gap-3 p-2.5 bg-white dark:bg-black-950 border border-slate-200 dark:border-black-800 rounded-lg shadow-sm hover:border-emerald-400 hover:shadow-md transition-all cursor-pointer group">
-                   <div class="w-7 h-7 rounded-full bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 flex items-center justify-center shrink-0 group-hover:bg-emerald-600 group-hover:text-white transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg></div>
-                   <span class="text-xs font-bold text-slate-700 dark:text-black-200 group-hover:text-emerald-700">Оповестить жителей</span>
+                 <li class="mt-4 p-3 bg-indigo-50 dark:bg-indigo-950/30 rounded-xl border border-indigo-100 dark:border-indigo-900/50">
+                    <p class="text-[10px] font-black text-indigo-500 uppercase mb-1">LLM ПРЕДСКАЗАНИЕ:</p>
+                    <p class="text-[11px] font-medium text-slate-700 dark:text-black-200 leading-relaxed italic">"{{ cityData.llm_recommendation }}"</p>
                  </li>
                </ul>
             </div>
@@ -254,6 +288,55 @@
             </div>
           </div>
         </section>
+
+        <!-- 20 Points Analytics History -->
+        <div class="mt-8 bg-white dark:bg-black-950 p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-black-800 shadow-sm relative overflow-hidden transition-all hover:border-indigo-300 dark:hover:border-indigo-800/50">
+          <div class="flex sm:flex-row flex-col items-start sm:items-center justify-between mb-8 gap-4">
+            <div>
+               <h3 class="text-xl font-black text-slate-800 dark:text-black-100 flex items-center gap-3">
+                 <span class="p-2 bg-indigo-50 dark:bg-indigo-950/30 rounded-lg text-indigo-500"><svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" /></svg></span>
+                 История состояний (последние 20 точек)
+               </h3>
+               <p class="text-sm text-slate-500 dark:text-black-400 mt-2 font-medium">Динамика изменения уровня выбросов и загруженности во времени.</p>
+            </div>
+            <div class="bg-indigo-50 dark:bg-indigo-950/30 text-indigo-600 px-4 py-2 rounded-xl text-xs font-bold border border-indigo-200 dark:border-indigo-800/50 uppercase tracking-widest flex items-center gap-2">
+               <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+               Аналитика активна
+            </div>
+          </div>
+          
+          <div class="h-64 w-full relative group">
+             <!-- Background Grid Lines -->
+             <div class="absolute inset-x-0 inset-y-6 flex flex-col justify-between opacity-30 pointer-events-none z-0">
+               <div class="border-b border-slate-300 dark:border-black-700 w-full border-dashed"></div>
+               <div class="border-b border-slate-300 dark:border-black-700 w-full border-dashed"></div>
+               <div class="border-b border-slate-300 dark:border-black-700 w-full border-dashed"></div>
+               <div class="border-b border-slate-300 dark:border-black-700 w-full border-dashed"></div>
+             </div>
+             
+             <!-- Reactive Bars derived from chart1Data -->
+             <div class="w-full h-full flex items-end justify-between px-1 pb-6 gap-1 sm:gap-2 relative z-10">
+                <div v-for="(val, idx) in chart1Data.slice(-20)" :key="idx" class="w-full h-full relative group/bar flex items-end justify-center">
+                   <!-- Tooltip -->
+                   <div class="absolute bottom-full mb-2 opacity-0 group-hover/bar:opacity-100 transition-opacity bg-slate-800 text-white text-[11px] font-bold py-1.5 px-2.5 rounded-lg whitespace-nowrap shadow-xl pointer-events-none z-20">
+                     Значение: {{ val }}
+                     <svg class="absolute text-slate-800 h-2 w-full left-0 top-full" x="0px" y="0px" viewBox="0 0 255 255" xml:space="preserve"><polygon class="fill-current" points="0,0 127.5,127.5 255,0"/></svg>
+                   </div>
+                   <!-- Value Bar -->
+                   <div class="w-full bg-gradient-to-t from-indigo-600 to-sky-400 rounded-md transition-all duration-700 ease-in-out group-hover/bar:from-sky-400 group-hover/bar:to-sky-300 group-hover/bar:-translate-y-1" :style="{height: `${val}%`}"></div>
+                </div>
+             </div>
+             
+             <!-- X-Axis Labels -->
+             <div class="absolute bottom-0 left-0 right-0 flex justify-between text-[11px] font-bold text-slate-400 dark:text-black-500 uppercase tracking-widest px-2">
+               <span>-20 циклов</span>
+               <span class="hidden sm:inline">-15</span>
+               <span>-10</span>
+               <span class="hidden sm:inline">-5</span>
+               <span class="text-indigo-500">Сейчас</span>
+             </div>
+          </div>
+        </div>
       </div>
 
       <!-- Analytics Tab -->
@@ -360,7 +443,10 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, onUnmounted } from 'vue'
+import { ref, watch, onMounted, onUnmounted, computed } from 'vue'
+import { useCityData } from '../composables/useCityData'
+
+const { data: cityData, isConnected } = useCityData()
 
 const isLive = ref(true)
 const isSimulation = ref(false)
@@ -431,10 +517,51 @@ onMounted(() => {
       ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
       : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
       
-    mapTileLayer = L.tileLayer(tileUrl, {
+      mapTileLayer = L.tileLayer(tileUrl, {
       subdomains: 'abcd',
       maxZoom: 20
     }).addTo(mapInstance);
+
+    // Добавление "точек проблем" (заметные точки)
+    const problemDots = [
+      [43.2420, 76.8950], [43.2350, 76.8800], [43.2450, 76.8850],
+      [43.2300, 76.8920], [43.2500, 76.9150], [43.2395, 76.8910],
+      // Новые точки вокруг центра
+      [43.2480, 76.8990], [43.2370, 76.9050], [43.2250, 76.8850],
+      [43.2310, 76.9150], [43.2450, 76.9200], [43.2330, 76.8750],
+      // Точки дальше (Восток / ВОАД)
+      [43.2550, 76.9550], [43.2400, 76.9600], [43.2350, 76.9500],
+      // Точки дальше (Запад / Саин-Абая)
+      [43.2200, 76.8550], [43.2250, 76.8450], [43.2150, 76.8650],
+      // Точки (Юг / Аль-Фараби)
+      [43.2150, 76.9250], [43.2100, 76.9350], [43.2050, 76.9050],
+      // Точки (Север / Суюнбая-Сейфуллина)
+      [43.2750, 76.9100], [43.2850, 76.9300], [43.2650, 76.9450],
+      [43.3000, 76.9050], [43.2600, 76.8950]
+    ];
+
+    const incidentTypes = [
+      '<b>Крупное ДТП</b><br>Заблокировано 2 полосы',
+      '<b>Затор (Traffic Jam)</b><br>Скорость потока < 10 км/ч',
+      '<b>Дорожные работы</b><br>Ремонт инфраструктуры',
+      '<b>Остановка движения</b><br>Сбой умного светофора',
+      '<b>Повышенный выброс AQI</b><br>Локальное загрязнение в 2 раза',
+      '<b>Авария с общественным транспортом</b><br>Требуется перенаправление',
+      '<b>Сложные метеоусловия</b><br>Затопление / гололед'
+    ];
+
+    problemDots.forEach((coord, idx) => {
+      // Pick pseudo-randomly to ensure variety across the map
+      const incident = incidentTypes[(idx * 3 + 1) % incidentTypes.length];
+      L.circleMarker(coord, {
+        radius: 8,
+        fillColor: "#ef4444",
+        color: "#ffffff",
+        weight: 3,
+        opacity: 1,
+        fillOpacity: 0.9
+      }).addTo(mapInstance).bindPopup(incident);
+    });
   }
   
   initLeafletMap();
@@ -483,14 +610,89 @@ useHead({
 // Mock icons mapped to heroicons or similar intuitive SVG structures
 const ActivityIcon = { template: `<svg fill="none"></svg>` }
 
-const kpis = ref([
-  { title: 'УРОВЕНЬ ТРАФИКА', value: 'КРИТИЧНО', subtitle: '88% загруженности', borderColor: 'border-t-rose-500', textColor: 'text-rose-600', image: 'https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&w=800&q=80' },
-  { title: 'КАЧЕСТВО ВОЗДУХА', value: '142 AQI', subtitle: 'Нездоровый', borderColor: 'border-t-amber-400', textColor: 'text-amber-500', image: 'https://picsum.photos/seed/factory/800/600' },
-  { title: 'ИНДЕКС ЗДОРОВЬЯ', value: '92/100', subtitle: 'Стабильно', borderColor: 'border-t-emerald-500', textColor: 'text-emerald-600', image: 'https://picsum.photos/seed/health/800/600' },
-  { title: 'АКТИВНЫЕ АЛЕРТЫ', value: '3', subtitle: 'Требуют внимания', borderColor: 'border-t-orange-500', textColor: 'text-orange-600' },
-])
+const kpis = computed(() => {
+  if (!cityData.value) {
+    return [
+      { title: 'УРОВЕНЬ ТРАФИКА', value: 'Загрузка...', subtitle: '...', borderColor: 'border-t-slate-300', textColor: 'text-slate-400' },
+      { title: 'КАЧЕСТВО ВОЗДУХА', value: 'Загрузка...', subtitle: '...', borderColor: 'border-t-slate-300', textColor: 'text-slate-400' },
+      { title: 'ИНДЕКС ЗДОРОВЬЯ', value: 'Загрузка...', subtitle: '...', borderColor: 'border-t-slate-300', textColor: 'text-slate-400' },
+      { title: 'АКТИВНЫЕ АЛЕРТЫ', value: 'Загрузка...', subtitle: '...', borderColor: 'border-t-slate-300', textColor: 'text-slate-400' },
+    ]
+  }
 
-const chart1Data = ref([45, 60, 30, 85, 90, 70, 50, 65, 80, 40, 55, 75, 45, 60, 30, 85, 90, 70, 50, 65, 80, 40, 55, 75])
+  const { metrics, insights } = cityData.value
+  
+  // Mapping color/severity based on backend insights
+  const trafficColor = insights.level === 'HIGH' ? 'text-rose-600' : (insights.level === 'MEDIUM' ? 'text-amber-500' : 'text-emerald-600')
+  const trafficBorder = insights.level === 'HIGH' ? 'border-t-rose-500' : (insights.level === 'MEDIUM' ? 'border-t-amber-400' : 'border-t-emerald-500')
+
+  const airSeverity = metrics.air_quality_index > 200 ? 'Очень плохо' : (metrics.air_quality_index > 100 ? 'Нездоровый' : 'Хороший')
+  const airColor = metrics.air_quality_index > 200 ? 'text-rose-600' : (metrics.air_quality_index > 100 ? 'text-amber-500' : 'text-emerald-600')
+  const airBorder = metrics.air_quality_index > 200 ? 'border-t-rose-500' : (metrics.air_quality_index > 100 ? 'border-t-amber-400' : 'border-t-emerald-500')
+
+  return [
+    { 
+      title: 'УРОВЕНЬ ТРАФИКА', 
+      value: insights.level_ru, 
+      subtitle: `${metrics.traffic_index}% загруженности`, 
+      borderColor: trafficBorder, 
+      textColor: trafficColor, 
+      image: 'https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&w=800&q=80' 
+    },
+    { 
+      title: 'КАЧЕСТВО ВОЗДУХА', 
+      value: `${metrics.air_quality_index} AQI`, 
+      subtitle: airSeverity, 
+      borderColor: airBorder, 
+      textColor: airColor, 
+      image: 'https://picsum.photos/seed/factory/800/600' 
+    },
+    { 
+      title: 'ИНДЕКС ЗДОРОВЬЯ', 
+      value: `${insights.city_health_score}/100`, 
+      subtitle: 'Статистика', 
+      borderColor: 'border-t-emerald-500', 
+      textColor: 'text-emerald-600', 
+      image: 'https://picsum.photos/seed/health/800/600' 
+    },
+    { 
+      title: 'АКТИВНЫЕ АЛЕРТЫ', 
+      value: metrics.active_incidents.toString(), 
+      subtitle: 'Требуют внимания', 
+      borderColor: 'border-t-orange-500', 
+      textColor: 'text-orange-600' 
+    },
+  ]
+})
+
+const chart1Data = computed(() => {
+  if (!cityData.value) return Array(24).fill(0)
+  // Extract traffic_index from history
+  return cityData.value.history.map(p => p.traffic_index)
+})
+
+const isSimulating = computed(() => cityData.value?.insights.is_simulation || false)
+
+const triggerSim = async (action) => {
+  if (isSimulating.value) return;
+  
+  const config = useRuntimeConfig()
+  const scenarioMap = {
+    'close_road': 'close_road',
+    'add_buses': 'increase_buses',
+    'emergency': 'restrict_diesel' // mapping to some backend scenario
+  }
+
+  try {
+    await fetch(`${config.public.apiUrl}/api/simulate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ scenario: scenarioMap[action] || action })
+    })
+  } catch (err) {
+    console.error('Error triggering simulation:', err)
+  }
+}
 </script>
 
 <style scoped>
