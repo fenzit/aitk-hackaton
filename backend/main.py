@@ -178,7 +178,7 @@ def analyze(metrics: dict) -> dict:
 async def city_data_loop():
     """Каждые 3 секунды генерирует новые данные и рассылает всем клиентам."""
     while True:
-        await asyncio.sleep(3)
+        await asyncio.sleep(20)
 
         metrics = generate_metrics()
         insights = analyze(metrics)
