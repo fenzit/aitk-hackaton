@@ -1,0 +1,44 @@
+version: "3.9"
+
+services:
+
+  backend:
+    build: ./backend/
+    container_name: citymind-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # МЛ-сервис подключается сюда отдельно.
+  # Когда МЛ-разработчик поднимет свой контейнер — добавить сюда:
+  #
+  # ml-service:
+  #   build: ../ml-service
+  #   container_name: citymind-ml
+  #   environment:
+  #     - BACKEND_URL=http://backend:8000
+  #   depends_on:
+  #     backend:
+  #       condition: service_healthy
+  #   restart: unless-stopped
+
+  # Фронтенд — раскомментировать когда будет готов:
+  #
+  # frontend:
+  #   build: ../frontend
+  #   container_name: citymind-frontend
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     - REACT_APP_WS_URL=ws://localhost:8000/ws/city
+  #     - REACT_APP_API_URL=http://localhost:8000
+  #   depends_on:
+  #     - backend
+  #   restart: unless-stopped
