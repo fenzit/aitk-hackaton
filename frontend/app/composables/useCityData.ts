@@ -1,4 +1,4 @@
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, watch, onMounted, onUnmounted } from 'vue'
 
 export interface CityMetrics {
   traffic_index: number
@@ -15,7 +15,6 @@ export interface CityInsights {
   composite_score: number
   problems: string[]
   actions: string[]
-  causal_link: string | null
   is_simulation: boolean
 }
 
@@ -32,6 +31,7 @@ export interface CityScenario {
 }
 
 export interface CitySnapshot {
+  city: string
   timestamp: number
   metrics: CityMetrics
   insights: CityInsights
@@ -39,7 +39,7 @@ export interface CitySnapshot {
   history: CityHistoryPoint[]
 }
 
-export const useCityData = () => {
+export const useCityData = (cityRef: { value: string }) => {
   const config = useRuntimeConfig()
   const data = ref<CitySnapshot | null>(null)
   const scenarios = ref<Record<string, CityScenario>>({})
@@ -50,8 +50,9 @@ export const useCityData = () => {
 
   const fetchData = async () => {
     try {
+      const city = cityRef.value;
       const [dataRes, scenariosRes] = await Promise.all([
-        fetch(`${config.public.apiUrl}/api/city-state`),
+        fetch(`${config.public.apiUrl}/api/city-state?city=${encodeURIComponent(city)}`),
         fetch(`${config.public.apiUrl}/api/scenarios`)
       ])
       
@@ -70,7 +71,8 @@ export const useCityData = () => {
   const connectWs = () => {
     if (ws) ws.close()
 
-    ws = new WebSocket(config.public.wsUrl)
+    const city = cityRef.value;
+    ws = new WebSocket(`${config.public.wsUrl}?city=${encodeURIComponent(city)}`)
 
     ws.onopen = () => {
       isConnected.value = true
@@ -80,23 +82,35 @@ export const useCityData = () => {
     ws.onmessage = (event) => {
       try {
         const payload = JSON.parse(event.data)
-        data.value = payload
+        // Ensure we only use data for the currently selected city
+        if (payload.city === cityRef.value) {
+          data.value = payload
+        }
       } catch (err) {
         console.error('Error parsing WS message:', err)
       }
     }
 
     ws.onerror = (err) => {
-      console.error('WS Error:', err)
+      // console.error('WS Error:', err)
       isConnected.value = false
     }
 
     ws.onclose = () => {
       isConnected.value = false
-      // Reconnect after 3 seconds
-      setTimeout(connectWs, 3000)
+      // Reconnect after 3 seconds if still same city
+      setTimeout(() => {
+        if (city === cityRef.value) connectWs()
+      }, 3000)
     }
   }
+
+  // Reload everything when city changes
+  watch(() => cityRef.value, () => {
+    data.value = null // clear for loading state
+    fetchData()
+    connectWs()
+  })
 
   onMounted(() => {
     fetchData()
@@ -105,7 +119,7 @@ export const useCityData = () => {
 
   onUnmounted(() => {
     if (ws) {
-      ws.onclose = null // Prevent reconnect loop
+      ws.onclose = null
       ws.close()
     }
   })

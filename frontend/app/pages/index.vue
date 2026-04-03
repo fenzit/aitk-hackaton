@@ -10,7 +10,7 @@
           <div class="h-12 w-12 rounded-full bg-white dark:bg-black-950 shadow-sm border border-slate-200 dark:border-black-800 overflow-hidden shrink-0 flex items-center justify-center p-0.5">
             <img src="/logo.png" alt="CityMind Logo" class="h-full w-full object-cover rounded-full" />
           </div>
-          <span class="ml-3 font-black text-slate-800 dark:text-black-100 tracking-tight text-xl">CityMind</span>
+          <span class="ml-3 font-black text-slate-800 dark:text-black-100 tracking-tight text-xl">CityMind AI</span>
         </div>
         <button class="lg:hidden text-slate-400 dark:text-black-500 hover:bg-slate-100 dark:bg-black-900 p-1.5 rounded-lg -mr-2" @click="isMobileMenuOpen = false">
           <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -37,10 +37,6 @@
         
         <div class="pt-4 mt-4 border-t border-slate-100 dark:border-black-900"></div>
         
-        <NuxtLink to="/simulation" class="w-full flex items-center justify-start gap-3 px-3 py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm bg-gradient-to-r from-killarney-500 to-killarney-600 text-white shadow-killarney-500/20 hover:from-killarney-600 hover:to-killarney-700 mt-2">
-          <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-          <span class="block">Режим симуляции</span>
-        </NuxtLink>
       </nav>
     </aside>
 
@@ -50,15 +46,21 @@
       <header class="bg-white dark:bg-black-950 border-b border-slate-200 dark:border-black-800 h-16 shrink-0 px-4 md:px-6 flex items-center justify-between z-10 w-full">
         <div class="flex items-center gap-4 md:gap-6">
           <div class="flex items-center gap-2">
-            <h1 class="text-xl font-black tracking-tight text-slate-800 dark:text-black-100 leading-none lg:hidden hidden sm:block">CityMind</h1>
+            <h1 class="text-xl font-black tracking-tight text-slate-800 dark:text-black-100 leading-none lg:hidden hidden sm:block">CityMind AI</h1>
           </div>
           
           <div class="h-6 w-px bg-slate-200 hidden md:block"></div>
           
           <div class="hidden md:flex items-center gap-2 bg-slate-50 dark:bg-black-950 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-black-800 hover:border-killarney-300 transition-colors cursor-pointer group relative">
             <svg class="w-5 h-5 text-slate-500 dark:text-black-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-            <select v-if="cityData" class="bg-transparent border-none text-sm font-medium text-slate-700 dark:text-black-200 outline-none cursor-pointer group-hover:text-killarney-600 appearance-none pr-6 relative z-10 w-fit">
-              <option>Алматы</option>
+            <select 
+              v-if="cityData" 
+              v-model="selectedCity"
+              class="bg-transparent border-none text-sm font-black text-slate-700 dark:text-black-200 outline-none cursor-pointer group-hover:text-killarney-600 appearance-none pr-6 relative z-10 w-fit uppercase tracking-tighter"
+            >
+              <option value="Алматы">Алматы</option>
+              <option value="Астана">Астана</option>
+              <option value="Шымкент">Шымкент</option>
             </select>
             
 
@@ -164,39 +166,38 @@
             </div>
           </div>
           
-          <div class="flex-1 overflow-y-auto p-5 space-y-5">
+          <div class="flex-1 overflow-y-auto p-5 space-y-6 custom-scrollbar scroll-smooth overscroll-contain">
             <div>
-               <h3 class="text-[10px] font-bold text-slate-400 dark:text-black-500 uppercase tracking-widest mb-1.5">ЧТО ПРОИСХОДИТ:</h3>
-               <p v-if="cityData" class="text-slate-800 dark:text-black-100 font-bold text-lg leading-tight">
+               <h3 class="text-[10px] font-bold text-slate-400 dark:text-black-500 lowercase tracking-widest mb-1.5 opacity-80">что происходит:</h3>
+               <p v-if="cityData" class="text-slate-800 dark:text-black-100 font-bold text-lg leading-tight tracking-tight">
                  {{ cityData.insights.problems[0] }}
                </p>
                <p v-else class="text-slate-400 font-bold text-lg">Загрузка данных...</p>
             </div>
             
-            <div class="bg-rose-50 dark:bg-rose-950/30 p-3.5 rounded-xl border border-rose-100 flex justify-between items-center">
-               <h3 class="text-[10px] font-bold text-rose-500/70 uppercase tracking-widest">НАСКОЛЬКО КРИТИЧНО:</h3>
-               <p v-if="cityData" class="text-rose-600 font-black flex items-center gap-2">
+            <div class="bg-rose-50 dark:bg-rose-950/30 p-4 rounded-2xl border border-rose-100 dark:border-rose-900/50 flex justify-between items-center shadow-sm">
+               <h3 class="text-[10px] font-bold text-rose-500/70 lowercase tracking-widest">насколько критично:</h3>
+               <p v-if="cityData" class="text-rose-600 dark:text-rose-400 font-black flex items-center gap-2">
                  {{ cityData.insights.level_ru.toUpperCase() }} 
                  <span :class="['w-3 h-3 rounded-full', cityData.insights.level === 'HIGH' ? 'bg-rose-600' : 'bg-amber-500']"></span>
                </p>
             </div>
             
             <div class="pt-1">
-               <h3 class="text-[10px] font-bold text-slate-400 dark:text-black-500 uppercase tracking-widest mb-2.5">ЧТО ДЕЛАТЬ (AI РЕКОМЕНДАЦИЯ):</h3>
+               <h3 class="text-[10px] font-bold text-slate-400 dark:text-black-500 lowercase tracking-widest mb-3 opacity-80">что делать (ai рекомендация):</h3>
                <ul v-if="cityData" class="space-y-2.5">
-                 <li v-for="(action, idx) in cityData.insights.actions" :key="idx" class="flex items-center gap-3 p-2.5 bg-white dark:bg-black-950 border border-slate-200 dark:border-black-800 rounded-lg shadow-sm hover:border-killarney-400 hover:shadow-md transition-all cursor-pointer group">
-                   <div class="w-7 h-7 rounded-full bg-killarney-50 dark:bg-killarney-950/30 text-killarney-600 flex items-center justify-center shrink-0 group-hover:bg-killarney-600 group-hover:text-white transition-colors">
-                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                 <li v-for="(action, idx) in cityData.insights.actions" :key="idx" class="flex items-center gap-3 p-3 bg-white dark:bg-black-950/50 border border-slate-200 dark:border-black-800 rounded-xl shadow-sm hover:border-killarney-400 hover:shadow-md transition-all cursor-pointer group">
+                   <div class="w-8 h-8 rounded-full bg-killarney-50 dark:bg-killarney-950/30 text-killarney-600 flex items-center justify-center shrink-0 group-hover:bg-killarney-600 group-hover:text-white transition-colors">
+                     <svg class="w-5 h-5 border-2 border-transparent rounded-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                    </div>
-                   <span class="text-xs font-bold text-slate-700 dark:text-black-200 group-hover:text-killarney-700">{{ action }}</span>
+                   <span class="text-xs font-bold text-slate-700 dark:text-black-200 group-hover:text-killarney-700 leading-snug">{{ action }}</span>
                  </li>
-                 <li class="mt-4 p-3 bg-indigo-50 dark:bg-indigo-950/30 rounded-xl border border-indigo-100 dark:border-indigo-900/50">
-                    <p class="text-[10px] font-black text-indigo-500 uppercase mb-1">LLM ПРЕДСКАЗАНИЕ:</p>
+                 <li class="mt-6 p-4 bg-indigo-50 dark:bg-indigo-950/30 rounded-2xl border border-indigo-100 dark:border-indigo-900/40 shadow-inner">
+                    <p class="text-[10px] font-black text-indigo-500 lowercase tracking-widest mb-2 opacity-80 border-b border-indigo-100/50 dark:border-indigo-900/30 pb-1">llm предсказание:</p>
                     <p class="text-[11px] font-medium text-slate-700 dark:text-black-200 leading-relaxed italic">"{{ cityData.llm_recommendation }}"</p>
                  </li>
                </ul>
             </div>
-            
           </div>
         </div>
       </section>
@@ -207,25 +208,73 @@
           <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
         </button>
         <div v-if="selectedInfo === 'how_to_use'">
-          <h2 class="text-xl font-bold text-slate-800 dark:text-black-100 mb-4 flex items-center gap-2">
+          <h2 class="text-xl font-bold text-slate-800 dark:text-black-100 mb-6 flex items-center gap-2 uppercase tracking-tight">
             <svg class="w-6 h-6 text-killarney-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-            Как пользоваться системой?
+            Как это работает: Три слоя интеллекта
           </h2>
-          <div class="space-y-3 text-slate-600 dark:text-black-300 text-sm leading-relaxed">
-            <p>1. Изучайте интерактивную карту для мониторинга инфраструктуры города.</p>
-            <p>2. Используйте <strong>CITY INSIGHT</strong> для получения AI-рекомендаций и запуска симуляций.</p>
-            <p>3. Переключайтесь между вкладками Экология и Аналитика для детального просмотра.</p>
-            <p>4. Применяйте стратегии, предложенные AI, для улучшения городских показателей.</p>
+          <div class="space-y-6 text-slate-600 dark:text-black-300 text-sm leading-relaxed max-w-3xl">
+            <div class="space-y-2">
+              <h3 class="font-bold text-slate-800 dark:text-black-100 flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-killarney-100 dark:bg-killarney-900/30 text-killarney-600 flex items-center justify-center text-[10px]">1</span>
+                Детекция проблем
+              </h3>
+              <p>Система непрерывно анализирует индекс трафика, качество воздуха, уровень шума и количество инцидентов. При превышении пороговых значений автоматически формируется список активных проблем.</p>
+            </div>
+
+            <div class="space-y-2">
+              <h3 class="font-bold text-slate-800 dark:text-black-100 flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-killarney-100 dark:bg-killarney-900/30 text-killarney-600 flex items-center justify-center text-[10px]">2</span>
+                Оценка критичности
+              </h3>
+              <p>Каждая ситуация получает составной балл на основе взвешенной комбинации показателей. Результат — уровень тревоги: <span class="font-bold text-rose-500">LOW / MEDIUM / HIGH</span> — и единый City Health Score от 0 до 100.</p>
+            </div>
+
+            <div class="space-y-2">
+              <h3 class="font-bold text-slate-800 dark:text-black-100 flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-killarney-100 dark:bg-killarney-900/30 text-killarney-600 flex items-center justify-center text-[10px]">3</span>
+                Причинно-следственный анализ
+              </h3>
+              <p>Система понимает связи между показателями. Например: высокий трафик → рост загрязнения воздуха. Это позволяет давать рекомендации, которые решают несколько проблем одним действием.</p>
+            </div>
+
+            <div class="pt-4 border-t border-slate-100 dark:border-black-900 space-y-3">
+              <h3 class="font-black text-xs text-killarney-600 uppercase tracking-widest">Симуляция решений</h3>
+              <p>Ключевая функция системы — режим <strong>"Simulate Decision"</strong>. Менеджер выбирает сценарий («закрыть центральную дорогу», «увеличить частоту автобусов», «ограничить дизельный транспорт», «включить зелёную волну») и мгновенно видит, как изменятся показатели города, включая нежелательные побочные эффекты.</p>
+              <p class="italic text-slate-400 dark:text-black-500 text-xs">Это превращает систему из инструмента наблюдения в инструмент принятия решений.</p>
+            </div>
+
+            <div class="pt-4 border-t border-slate-100 dark:border-black-900 space-y-2">
+              <h3 class="font-black text-xs text-indigo-500 uppercase tracking-widest">AI-рекомендации</h3>
+              <p>Языковая модель получает текущий срез данных и формулирует управленческую рекомендацию на естественном языке — не шаблонный текст, а вывод, привязанный к конкретной ситуации в городе прямо сейчас.</p>
+            </div>
           </div>
         </div>
         <div v-if="selectedInfo === 'info'">
-          <h2 class="text-xl font-bold text-slate-800 dark:text-black-100 mb-4 flex items-center gap-2">
+          <h2 class="text-xl font-bold text-slate-800 dark:text-black-100 mb-6 flex items-center gap-2 uppercase tracking-tight">
             <svg class="w-6 h-6 text-killarney-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-            Информация
+            Что это?
           </h2>
-          <div class="space-y-3 text-slate-600 dark:text-black-300 text-sm leading-relaxed">
-            <p><strong>CityMind AI</strong> — это интеллектуальная панель управления городскими смарт-системами, созданная для оптимизации городской среды.</p>
-            <p>Система объединяет алгоритмы ИИ с данными в реальном времени для симуляции и принятия решений.</p>
+          <div class="space-y-5 text-slate-600 dark:text-black-300 text-sm leading-relaxed max-w-3xl">
+            <p><strong>CityMind AI</strong> — не дашборд с графиками. Это цифровой мозг города: система, которая непрерывно наблюдает за двумя ключевыми направлениями — <span class="text-killarney-600 font-bold">транспортом и экологией</span> — и самостоятельно принимает решения о приоритетах и действиях.</p>
+            
+            <div class="pt-2">
+              <p class="font-bold text-slate-800 dark:text-black-100 mb-3">Система отвечает на три вопроса, которые задаёт каждый городской менеджер:</p>
+              <ul class="space-y-2 list-none">
+                <li class="flex items-center gap-3">
+                  <div class="w-1.5 h-1.5 rounded-full bg-killarney-500"></div>
+                  Что происходит прямо сейчас?
+                </li>
+                <li class="flex items-center gap-3">
+                  <div class="w-1.5 h-1.5 rounded-full bg-killarney-500"></div>
+                  Насколько это критично?
+                </li>
+                <li class="flex items-center gap-3">
+                  <div class="w-1.5 h-1.5 rounded-full bg-killarney-500"></div>
+                  Что конкретно нужно сделать?
+                </li>
+              </ul>
+            </div>
+            
             <p class="mt-4 pt-4 border-t border-slate-100 dark:border-black-900 text-xs text-slate-400 dark:text-black-500">Версия системы: 1.0.4 (Сборка: Hackathon)</p>
           </div>
         </div>
@@ -340,32 +389,32 @@
              :class="[
                'p-5 rounded-2xl border transition-all cursor-pointer group relative overflow-hidden h-full flex flex-col',
                hoveredScenario === key 
-                ? 'bg-slate-900 border-slate-900 shadow-xl -translate-y-1' 
-                : 'bg-white dark:bg-black-950 border-slate-200 dark:border-black-800 hover:border-slate-400'
+                ? 'bg-white dark:bg-black-900 border-killarney-500 shadow-2xl shadow-killarney-500/10 -translate-y-1' 
+                : 'bg-white dark:bg-black-950 border-slate-200 dark:border-black-800 hover:border-slate-400 shadow-sm'
              ]"
            >
               <div class="flex items-center justify-between mb-4 relative z-10">
                 <div :class="[
                   'w-8 h-8 rounded-lg flex items-center justify-center transition-colors',
-                  hoveredScenario === key ? 'bg-white/10' : 'bg-slate-100 dark:bg-black-900'
+                  hoveredScenario === key ? 'bg-killarney-50 dark:bg-killarney-900/30' : 'bg-slate-100 dark:bg-black-900'
                 ]">
-                  <div v-if="key === 'close_road'" :class="['w-2.5 h-2.5 rounded-full', hoveredScenario === key ? 'bg-rose-400 shadow-[0_0_10px_rgba(244,63,94,0.6)]' : 'bg-rose-500']"></div>
-                  <div v-else-if="key === 'increase_buses'" :class="['w-2.5 h-2.5 rounded-sm', hoveredScenario === key ? 'bg-indigo-400 shadow-[0_0_10px_rgba(99,102,241,0.6)]' : 'bg-indigo-500']"></div>
-                  <div v-else-if="key === 'restrict_diesel'" :class="['w-2.5 h-2.5 rotate-45 rounded-[1px]', hoveredScenario === key ? 'bg-amber-400 shadow-[0_0_10px_rgba(245,158,11,0.6)]' : 'bg-amber-500']"></div>
-                  <div v-else-if="key === 'green_wave'" :class="['w-3 h-1 rounded-full', hoveredScenario === key ? 'bg-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.6)]' : 'bg-emerald-500']"></div>
+                  <div v-if="key === 'close_road'" :class="['w-2.5 h-2.5 rounded-full', hoveredScenario === key ? 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.4)]' : 'bg-rose-500/60']"></div>
+                  <div v-else-if="key === 'increase_buses'" :class="['w-2.5 h-2.5 rounded-sm', hoveredScenario === key ? 'bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.4)]' : 'bg-indigo-500/60']"></div>
+                  <div v-else-if="key === 'restrict_diesel'" :class="['w-2.5 h-2.5 rotate-45 rounded-[1px]', hoveredScenario === key ? 'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.4)]' : 'bg-amber-500/60']"></div>
+                  <div v-else-if="key === 'green_wave'" :class="['w-3 h-1 rounded-full', hoveredScenario === key ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]' : 'bg-emerald-500/60']"></div>
                   <div v-else :class="['w-2.5 h-2.5 rounded-full bg-slate-400']"></div>
                 </div>
                 
-                <div v-if="hoveredScenario === key" class="bg-white/10 px-2.5 py-1 rounded-md text-[7px] font-black text-white uppercase tracking-[0.1em] border border-white/10">
+                <div v-if="hoveredScenario === key" class="bg-killarney-50 dark:bg-killarney-900/40 px-2.5 py-1 rounded-md text-[7px] font-black text-killarney-600 dark:text-killarney-400 uppercase tracking-[0.1em] border border-killarney-100 dark:border-killarney-800">
                   Forecast
                 </div>
               </div>
               
-              <h3 :class="['font-black text-[10px] uppercase tracking-widest mb-2 relative z-10 transition-colors', hoveredScenario === key ? 'text-white' : 'text-slate-800 dark:text-black-100']">
+              <h3 :class="['font-black text-[10px] uppercase tracking-widest mb-2 relative z-10 transition-colors', hoveredScenario === key ? 'text-slate-900 dark:text-white' : 'text-slate-700 dark:text-black-200']">
                 {{ scenario.label }}
               </h3>
               
-              <p :class="['text-[9px] font-medium leading-relaxed relative z-10 transition-colors', hoveredScenario === key ? 'text-slate-400' : 'text-slate-500 dark:text-black-400']">
+              <p :class="['text-[9px] font-medium leading-relaxed relative z-10 transition-colors', hoveredScenario === key ? 'text-slate-600 dark:text-black-300' : 'text-slate-500 dark:text-black-400']">
                 {{ scenario.prediction }}
               </p>
            </div>
@@ -381,10 +430,6 @@
               <div v-if="hoveredScenario" class="flex items-center gap-2 text-[10px] font-black text-indigo-500 bg-indigo-50 dark:bg-indigo-950/30 px-2 py-1 rounded-lg border border-indigo-200 animate-pulse">
                 <span>ПРЕДИКТИВНАЯ ГИПОТЕЗА</span>
               </div>
-              <select class="text-sm border border-slate-200 dark:border-black-800 rounded-lg px-2 py-1 text-slate-600 dark:text-black-300 bg-white dark:bg-black-950 outline-none focus:ring-1 focus:ring-killarney-500 font-medium">
-                <option>За 24 часа</option>
-                <option>За 7 дней</option>
-              </select>
             </div>
           </div>
           
@@ -513,7 +558,8 @@
 import { ref, watch, onMounted, onUnmounted, computed } from 'vue'
 import { useCityData } from '../composables/useCityData'
 
-const { data: cityData, scenarios, isConnected } = useCityData()
+const selectedCity = ref('Алматы')
+const { data: cityData, scenarios, isConnected } = useCityData(selectedCity)
 
 const systemMode = ref('live')
 const hoveredScenario = ref(null)
@@ -553,6 +599,12 @@ const toggleFullscreen = () => {
   }, 300)
 }
 
+const getCityCoords = (city) => {
+  if (city === 'Астана') return [51.1694, 71.4491];
+  if (city === 'Шымкент') return [42.3417, 69.5901];
+  return [43.2389, 76.8897]; // Almaty
+};
+
 let timer
 onMounted(() => {
   const updateTime = () => {
@@ -578,7 +630,7 @@ onMounted(() => {
     mapInstance = L.map('map', { 
       zoomControl: false,
       attributionControl: false
-    }).setView([43.2389, 76.8897], 13);
+    }).setView(getCityCoords(selectedCity.value), 12);
     
     const tileUrl = colorMode.value === 'dark' 
       ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
@@ -589,24 +641,23 @@ onMounted(() => {
       maxZoom: 20
     }).addTo(mapInstance);
 
-    // Добавление "точек проблем" (заметные точки)
-    const problemDots = [
-      [43.2420, 76.8950], [43.2350, 76.8800], [43.2450, 76.8850],
-      [43.2300, 76.8920], [43.2500, 76.9150], [43.2395, 76.8910],
-      // Новые точки вокруг центра
-      [43.2480, 76.8990], [43.2370, 76.9050], [43.2250, 76.8850],
-      [43.2310, 76.9150], [43.2450, 76.9200], [43.2330, 76.8750],
-      // Точки дальше (Восток / ВОАД)
-      [43.2550, 76.9550], [43.2400, 76.9600], [43.2350, 76.9500],
-      // Точки дальше (Запад / Саин-Абая)
-      [43.2200, 76.8550], [43.2250, 76.8450], [43.2150, 76.8650],
-      // Точки (Юг / Аль-Фараби)
-      [43.2150, 76.9250], [43.2100, 76.9350], [43.2050, 76.9050],
-      // Точки (Север / Суюнбая-Сейфуллина)
-      [43.2750, 76.9100], [43.2850, 76.9300], [43.2650, 76.9450],
-      [43.3000, 76.9050], [43.2600, 76.8950]
-    ];
+    // No static dots logic here anymore, moved to renderMarkers
+  }
+  
+  initLeafletMap();
 
+  const renderMarkers = (city) => {
+    if (!mapInstance || !window.L) return;
+
+    // Clear old markers
+    mapInstance.eachLayer((layer) => {
+      if (layer instanceof L.CircleMarker) {
+        mapInstance.removeLayer(layer);
+      }
+    });
+
+    const coords = getCityCoords(city);
+    const count = Math.floor(Math.random() * (35 - 20 + 1)) + 20;
     const incidentTypes = [
       '<b>Крупное ДТП</b><br>Заблокировано 2 полосы',
       '<b>Затор (Traffic Jam)</b><br>Скорость потока < 10 км/ч',
@@ -617,10 +668,12 @@ onMounted(() => {
       '<b>Сложные метеоусловия</b><br>Затопление / гололед'
     ];
 
-    problemDots.forEach((coord, idx) => {
-      // Pick pseudo-randomly to ensure variety across the map
-      const incident = incidentTypes[(idx * 3 + 1) % incidentTypes.length];
-      L.circleMarker(coord, {
+    for (let i = 0; i < count; i++) {
+      const lat = coords[0] - 0.06 + Math.random() * 0.12;
+      const lon = coords[1] - 0.08 + Math.random() * 0.16;
+      const incident = incidentTypes[(i * 3 + 1) % incidentTypes.length];
+      
+      L.circleMarker([lat, lon], {
         radius: 8,
         fillColor: "#ef4444",
         color: "#ffffff",
@@ -628,10 +681,11 @@ onMounted(() => {
         opacity: 1,
         fillOpacity: 0.9
       }).addTo(mapInstance).bindPopup(incident);
-    });
-  }
-  
-  initLeafletMap();
+    }
+  };
+
+  // Initial markers
+  setTimeout(() => renderMarkers(selectedCity.value), 500);
 
   watch(() => colorMode.value, (newMode) => {
     if (mapTileLayer) {
@@ -640,6 +694,14 @@ onMounted(() => {
         : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
       mapTileLayer.setUrl(tileUrl);
     }
+  });
+
+  // Reactive City Switching
+  watch(selectedCity, (newCity) => {
+    if (!mapInstance) return;
+    const coords = getCityCoords(newCity);
+    mapInstance.flyTo(coords, 12, { duration: 1.5 });
+    renderMarkers(newCity);
   });
 })
 
@@ -795,7 +857,7 @@ const kpis = computed(() => {
       subtitle: `${metrics.traffic_index}% загруженности`, 
       borderColor: trafficBorder, 
       textColor: trafficColor, 
-      image: 'https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&w=800&q=80' 
+      image: '/traffic_new.png' 
     },
     { 
       title: 'КАЧЕСТВО ВОЗДУХА', 
@@ -803,7 +865,7 @@ const kpis = computed(() => {
       subtitle: airSeverity, 
       borderColor: airBorder, 
       textColor: airColor, 
-      image: 'https://picsum.photos/seed/factory/800/600' 
+      image: '/smoke.png' 
     },
     { 
       title: 'ИНДЕКС ЗДОРОВЬЯ', 
@@ -811,14 +873,15 @@ const kpis = computed(() => {
       subtitle: 'Статистика', 
       borderColor: 'border-t-emerald-500', 
       textColor: 'text-emerald-600', 
-      image: 'https://picsum.photos/seed/health/800/600' 
+      image: '/health_index.png' 
     },
     { 
-      title: 'АКТИВНЫЕ АЛЕРТЫ', 
+      title: 'ОПОВЕЩЕНИЯ', 
       value: metrics.active_incidents.toString(), 
       subtitle: 'Требуют внимания', 
       borderColor: 'border-t-orange-500', 
-      textColor: 'text-orange-600' 
+      textColor: 'text-orange-600',
+      image: '/alerts.png'
     },
   ]
 })
@@ -837,7 +900,10 @@ const triggerSim = async (key) => {
     const response = await fetch(`${config.public.apiUrl}/api/simulate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ scenario: key })
+      body: JSON.stringify({ 
+        scenario: key,
+        city: selectedCity.value
+      })
     })
     
     if (!response.ok) throw new Error('Simulation trigger failed')
