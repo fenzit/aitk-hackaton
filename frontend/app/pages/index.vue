@@ -1,284 +1,341 @@
 <template>
-  <div class="min-h-screen bg-slate-50 text-slate-900 font-sans">
-    <!-- Header -->
-    <header class="bg-white border-b border-slate-200 px-6 py-3 flex items-center justify-between sticky top-0 z-50">
-      <div class="flex items-center gap-6">
-        <!-- Logo / Name -->
-        <div class="flex items-center gap-3">
-          <div class="w-8 h-8 bg-indigo-600 text-white rounded-md flex items-center justify-center font-bold text-lg shadow-sm">
-            C
-          </div>
-          <h1 class="text-lg font-bold tracking-tight text-slate-800 leading-none">CityMind AI</h1>
-        </div>
-        
-        <!-- Status & Time indicator -->
-        <div class="flex items-center gap-4 border-l border-slate-200 pl-6">
-          <button @click="toggleStatus" class="flex items-center gap-2 group focus:outline-none">
-            <span class="relative flex h-2.5 w-2.5">
-              <span v-if="isLive" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span :class="['relative inline-flex rounded-full h-2.5 w-2.5', isLive ? 'bg-emerald-500' : 'bg-rose-500']"></span>
-            </span>
-            <span class="text-sm font-medium text-slate-600 group-hover:text-slate-900 transition-colors">
-              {{ isLive ? 'Live' : 'Critical' }}
-            </span>
-          </button>
-          
-          <span class="text-sm text-slate-400 font-medium font-mono">{{ currentTime }}</span>
-        </div>
-      </div>
-      
-      <!-- Buttons -->
-      <div class="flex items-center gap-3">
-        <button class="px-3 py-1.5 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors flex items-center gap-2 border border-slate-200 shadow-sm bg-white">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-          </svg>
-          Refresh Data
-        </button>
-        <button @click="toggleSimulation" :class="['px-3 py-1.5 text-sm font-medium rounded-lg transition-colors flex items-center gap-2 border shadow-sm', isSimulation ? 'bg-indigo-50 border-indigo-200 text-indigo-700' : 'bg-white border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100']">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-          </svg>
-          {{ isSimulation ? 'Simulation Mode ON' : 'Toggle Simulation' }}
-        </button>
-      </div>
-    </header>
+  <div class="flex h-screen bg-slate-50 text-slate-900 font-sans overflow-hidden">
+    <!-- Mobile Sidebar Backdrop -->
+    <div v-if="isMobileMenuOpen" class="fixed inset-0 bg-slate-900/50 z-40 lg:hidden backdrop-blur-sm transition-opacity" @click="isMobileMenuOpen = false"></div>
 
-    <main class="p-6 max-w-[1600px] mx-auto space-y-6">
-      <!-- KPI Cards (4 blocks in one row) -->
-      <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div v-for="(kpi, index) in kpis" :key="index" class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm transition-shadow hover:shadow-md">
-          <div class="flex items-start justify-between mb-4">
-            <h3 class="text-sm font-medium text-slate-500">{{ kpi.title }}</h3>
-            <div :class="`p-2 rounded-lg ${kpi.colorClass}`">
-              <component :is="kpi.icon" class="w-5 h-5" />
+    <!-- Sidebar -->
+    <aside :class="['fixed inset-y-0 left-0 bg-white border-r border-slate-200 flex-col z-50 w-64 lg:static lg:w-64 transition-transform duration-300 transform flex-shrink-0', isMobileMenuOpen ? 'translate-x-0 flex' : '-translate-x-full lg:translate-x-0 hidden lg:flex']">
+      <div class="h-20 flex items-center justify-between px-6 border-b border-slate-200 shrink-0">
+        <div class="flex items-center">
+          <div class="h-12 w-12 rounded-full bg-white shadow-sm border border-slate-200 overflow-hidden shrink-0 flex items-center justify-center p-0.5">
+            <img src="/logo.png" alt="CityMind Logo" class="h-full w-full object-cover rounded-full" />
+          </div>
+          <span class="ml-3 font-black text-slate-800 tracking-tight text-xl">CityMind</span>
+        </div>
+        <button class="lg:hidden text-slate-400 hover:bg-slate-100 p-1.5 rounded-lg -mr-2" @click="isMobileMenuOpen = false">
+          <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1">
+        <a href="#" @click.prevent="currentTab = 'dashboard'" :class="['flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors', currentTab === 'dashboard' ? 'text-killarney-700 bg-killarney-50' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900']">
+          <svg class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+          <span class="block">Дашборд</span>
+        </a>
+        <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors">
+          <svg class="w-5 h-5 text-slate-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
+          <span class="block">Транспорт</span>
+        </a>
+        <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors">
+          <svg class="w-5 h-5 text-slate-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          <span class="block">Экология</span>
+        </a>
+        <a href="#" @click.prevent="currentTab = 'analytics'" :class="['flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors', currentTab === 'analytics' ? 'text-killarney-700 bg-killarney-50' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900']">
+          <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" :class="currentTab === 'analytics' ? 'text-killarney-500' : 'text-slate-400'">
+            <rect x="4" y="14" width="4" height="6" rx="1.5"/>
+            <rect x="10" y="8" width="4" height="12" rx="1.5"/>
+            <rect x="16" y="4" width="4" height="16" rx="1.5"/>
+          </svg>
+          <span class="block">Аналитика</span>
+        </a>
+        
+        <div class="pt-4 mt-4 border-t border-slate-100"></div>
+        
+        <NuxtLink to="/simulation" class="w-full flex items-center justify-start gap-3 px-3 py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm bg-gradient-to-r from-killarney-500 to-killarney-600 text-white shadow-killarney-500/20 hover:from-killarney-600 hover:to-killarney-700 mt-2">
+          <span class="text-lg">✨</span>
+          <span class="block">Режим симуляции</span>
+        </NuxtLink>
+      </nav>
+    </aside>
+
+    <!-- Main Wrapper -->
+    <div class="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+      <!-- Top Bar -->
+      <header class="bg-white border-b border-slate-200 h-16 shrink-0 px-4 md:px-6 flex items-center justify-between z-10 w-full">
+        <div class="flex items-center gap-4 md:gap-6">
+          <button class="lg:hidden p-2 -ml-2 text-slate-500 hover:bg-slate-100 rounded-lg flex-shrink-0" @click="isMobileMenuOpen = true">
+            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+          <div class="flex items-center gap-2">
+            <h1 class="text-xl font-black tracking-tight text-slate-800 leading-none lg:hidden hidden sm:block">CityMind</h1>
+            <span class="hidden lg:block text-slate-400 font-medium tracking-wide">AI Control Center</span>
+          </div>
+          
+          <div class="h-6 w-px bg-slate-200 hidden md:block"></div>
+          
+          <div class="hidden md:flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200 hover:border-killarney-300 transition-colors cursor-pointer group relative">
+            <span class="text-lg">🌍</span>
+            <select class="bg-transparent border-none text-sm font-medium text-slate-700 outline-none cursor-pointer group-hover:text-killarney-600 appearance-none pr-6 relative z-10 w-[110px]">
+              <option>Нью-Йорк</option>
+              <option>Лондон</option>
+              <option>Токио</option>
+              <option>Алматы</option>
+            </select>
+            <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none text-slate-400 group-hover:text-killarney-500">
+               <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
             </div>
           </div>
-          <div class="flex items-baseline gap-2">
-            <p class="text-2xl font-bold text-slate-800">{{ kpi.value }}</p>
-            <span :class="`text-xs font-semibold ${kpi.trend > 0 ? 'text-emerald-500' : 'text-rose-500'}`">
-              {{ kpi.trend > 0 ? '+' : '' }}{{ kpi.trend }}%
-            </span>
+        </div>
+        
+        <div class="flex items-center gap-4 lg:gap-6">
+          <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-slate-50 rounded-lg border border-slate-200">
+            <span class="text-lg">⏱</span>
+            <span class="text-sm text-slate-700 font-medium font-mono tracking-tight">{{ currentTime }}</span>
           </div>
+          
+          <button class="relative p-2 text-slate-400 hover:text-slate-600 transition-colors rounded-full hover:bg-slate-100">
+            <span class="text-xl relative z-10">🔔</span>
+            <span class="absolute top-0 right-0 flex h-4 w-4">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-4 w-4 bg-rose-500 text-[9px] font-bold text-white items-center justify-center border-2 border-white">3</span>
+            </span>
+          </button>
+        </div>
+      </header>
+
+      <main class="flex-1 overflow-y-auto p-6 max-w-[1600px] w-full mx-auto">
+        <!-- Dashboard Tab -->
+        <div v-show="currentTab === 'dashboard'" class="space-y-6">
+          <!-- KPI Cards (4 blocks in one row) -->
+      <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div v-for="(kpi, index) in kpis" :key="index" :class="`bg-white p-6 rounded-xl border-t-4 shadow-sm transition-shadow hover:shadow-md ${kpi.borderColor}`">
+          <div class="flex items-start justify-between mb-4">
+            <h3 class="text-sm font-bold text-slate-600 uppercase tracking-wider">{{ kpi.title }}</h3>
+            <span class="text-xl">{{ kpi.emoji }}</span>
+          </div>
+          <div class="flex items-baseline gap-2">
+            <p :class="`text-3xl font-black ${kpi.textColor}`">{{ kpi.value }}</p>
+          </div>
+          <p class="text-xs font-semibold text-slate-500 mt-2">{{ kpi.subtitle }}</p>
         </div>
       </section>
 
-      <!-- Map (70%) and AI Insight Panel (30%) -->
-      <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[500px]">
-        <!-- Map Panel -->
-        <div class="lg:col-span-8 bg-slate-100 rounded-xl border border-slate-200 overflow-hidden relative shadow-sm h-full group">
-          <!-- Mock Map Background -->
-          <div class="absolute inset-0 bg-[url('https://api.mapbox.com/styles/v1/mapbox/dark-v11/static/-74.006,40.7128,12,0,0/1200x800?access_token=pk.eyJ1IjoiZXhhbXBsZSIsImEiOiJjazAifQ.example')] bg-cover bg-center opacity-80 mix-blend-luminosity"></div>
-          
-          <!-- Map Overlay Gradients -->
-          <div class="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-white w-full opacity-60"></div>
-          
-          <div class="absolute top-4 left-4 right-4 flex justify-between items-start z-10">
-            <div class="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-lg border border-slate-200 shadow-sm">
-              <h2 class="font-semibold text-slate-800 flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-500" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
-                </svg>
-                Live Traffic & Infrastructure Map
-              </h2>
-            </div>
-            
-            <div class="flex gap-2">
-              <button class="bg-white/90 backdrop-blur-sm p-2 rounded-lg border border-slate-200 shadow-sm hover:bg-white text-slate-600 transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h6a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" /></svg>
+      <!-- Map Section (Full Width, Centered) -->
+      <section 
+        :class="[
+          'w-full overflow-hidden relative shadow-md border border-slate-200 group transition-all duration-300',
+          isMapFullscreen ? 'fixed inset-0 z-50 rounded-none h-screen bg-slate-100' : 'rounded-2xl h-[500px] lg:h-[650px]'
+        ]"
+      >
+        <!-- Leaflet Map Container -->
+        <div id="map" class="absolute inset-0 h-full w-full z-0"></div>
+        
+        <!-- Map Overlay Gradients for soft blending -->
+        <div class="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-slate-900/10 w-full opacity-60 pointer-events-none z-10"></div>
+        
+        <!-- Map Top Bar: Title -->
+        <div class="absolute top-4 left-4 flex items-start gap-2 z-20 pointer-events-none">
+          <div class="bg-white/90 backdrop-blur-md px-5 py-3 rounded-xl border border-slate-200 shadow-sm pointer-events-auto flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-killarney-500" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+            </svg>
+            <h2 class="font-bold text-slate-800 text-lg">Карта инфраструктуры</h2>
+          </div>
+          <button @click="toggleFullscreen" class="bg-white/90 backdrop-blur-md p-3 rounded-xl border border-slate-200 shadow-sm pointer-events-auto hover:bg-white text-slate-600 transition-colors flex items-center justify-center">
+            <svg v-if="!isMapFullscreen" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" /></svg>
+            <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+          </button>
+        </div>
+
+        <!-- AI Panel Toggle Button (visible when panel is hidden) -->
+        <button 
+          @click="isAIPanelVisible = true"
+          :class="['absolute top-4 right-4 z-40 bg-rose-600 hover:bg-rose-700 text-white px-4 py-3 rounded-xl shadow-xl transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] pointer-events-auto flex items-center gap-2 border border-rose-500/50', 
+            isAIPanelVisible ? 'opacity-0 translate-x-12 scale-90 pointer-events-none' : 'opacity-100 translate-x-0 scale-100']"
+        >
+          <span class="text-xl">🚨</span>
+          <span class="font-bold tracking-wide text-sm hidden sm:block">CITY INSIGHT</span>
+        </button>
+
+        <!-- AI Insight Panel: Floating HUD overlay on the right -->
+        <div 
+          :class="['absolute bottom-0 lg:bottom-auto lg:top-4 right-0 lg:right-4 w-full lg:w-96 bg-white/95 backdrop-blur-lg lg:rounded-2xl border-t-4 lg:border-t-0 lg:border-l-[6px] border-rose-500 shadow-2xl flex flex-col h-[400px] lg:h-[calc(100%-2rem)] z-40 pointer-events-auto transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]', 
+            isAIPanelVisible ? 'translate-y-0 lg:translate-x-0' : 'translate-y-[120%] lg:translate-y-0 lg:translate-x-[120%]']"
+        >
+          <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-rose-50/50 shrink-0 cursor-pointer" @click="isAIPanelVisible = false">
+            <h2 class="font-extrabold text-slate-900 flex items-center gap-2 tracking-tight">
+              <span class="text-xl">🚨</span>
+              CITY INSIGHT
+            </h2>
+            <div class="flex items-center gap-4">
+              <span class="animate-pulse flex h-3 w-3">
+                <span class="animate-ping absolute inline-flex h-3 w-3 rounded-full bg-rose-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-3 w-3 bg-rose-500"></span>
+              </span>
+              <button class="text-slate-400 hover:text-slate-700 transition p-1.5 bg-white/50 hover:bg-white rounded-lg border border-slate-200">
+                <svg class="w-5 h-5 hidden lg:block" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                <svg class="w-5 h-5 lg:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
               </button>
             </div>
           </div>
           
-          <!-- Map Interactivity Mock -->
-          <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-            <div class="relative flex justify-center items-center">
-              <div class="absolute w-24 h-24 bg-indigo-500/20 rounded-full animate-ping"></div>
-              <div class="relative w-4 h-4 bg-indigo-600 rounded-full border-2 border-white shadow-lg"></div>
+          <div class="flex-1 overflow-y-auto p-5 space-y-5">
+            <div>
+               <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">ЧТО ПРОИСХОДИТ:</h3>
+               <p class="text-slate-800 font-bold text-lg leading-tight">Тревога: критическая пробка <br><span class="text-sm text-slate-500 font-medium">Обнаружен затор в центре</span></p>
             </div>
-          </div>
-        </div>
-
-        <!-- AI Insight Panel -->
-        <div class="lg:col-span-4 bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col h-full overflow-hidden">
-          <div class="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
-            <h2 class="font-semibold text-slate-800 flex items-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-500" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
-              </svg>
-              AI Insights
-            </h2>
-            <span class="text-xs font-medium px-2 py-1 bg-indigo-50 text-indigo-600 rounded text-center">Auto-updating</span>
-          </div>
-          
-          <div class="flex-1 overflow-y-auto p-4 space-y-4">
-            <div v-for="(insight, index) in insights" :key="index" class="p-4 rounded-lg border border-slate-100 hover:border-indigo-100 hover:bg-slate-50 transition-colors group">
-              <div class="flex items-center gap-2 mb-2">
-                <span :class="`w-2 h-2 rounded-full ${insight.urgency === 'high' ? 'bg-rose-500' : (insight.urgency === 'medium' ? 'bg-amber-500' : 'bg-blue-500')}`"></span>
-                <span class="text-xs font-medium text-slate-500 uppercase tracking-wider">{{ insight.time }}</span>
-              </div>
-              <p class="text-sm text-slate-700 leading-relaxed font-medium">
-                {{ insight.text }}
-              </p>
-              <div class="mt-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button class="text-xs text-indigo-600 font-medium hover:text-indigo-800">Resolve</button>
-                <button class="text-xs text-slate-500 font-medium hover:text-slate-700">Dismiss</button>
-              </div>
+            
+            <div class="bg-rose-50 p-3.5 rounded-xl border border-rose-100 flex justify-between items-center">
+               <h3 class="text-[10px] font-bold text-rose-500/70 uppercase tracking-widest">НАСКОЛЬКО КРИТИЧНО:</h3>
+               <p class="text-rose-600 font-black flex items-center gap-2">ВЫСOКИЙ 🔴</p>
+            </div>
+            
+            <div class="pt-1">
+               <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2.5">ЧТО ДЕЛАТЬ (AI РЕКОМЕНДАЦИЯ):</h3>
+               <ul class="space-y-2.5">
+                 <li class="flex items-center gap-3 p-2.5 bg-white border border-slate-200 rounded-lg shadow-sm hover:border-killarney-400 hover:shadow-md transition-all cursor-pointer group">
+                   <div class="w-7 h-7 rounded-full bg-killarney-50 text-killarney-600 flex items-center justify-center text-sm shrink-0 group-hover:bg-killarney-600 group-hover:text-white transition-colors">🚌</div>
+                   <span class="text-xs font-bold text-slate-700 group-hover:text-killarney-700">Увеличить автобусы</span>
+                 </li>
+                 <li class="flex items-center gap-3 p-2.5 bg-white border border-slate-200 rounded-lg shadow-sm hover:border-killarney-400 hover:shadow-md transition-all cursor-pointer group">
+                   <div class="w-7 h-7 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center text-sm shrink-0 group-hover:bg-rose-600 group-hover:text-white transition-colors">⛔</div>
+                   <span class="text-xs font-bold text-slate-700 group-hover:text-rose-700">Ограничить въезд</span>
+                 </li>
+                 <li class="flex items-center gap-3 p-2.5 bg-white border border-slate-200 rounded-lg shadow-sm hover:border-emerald-400 hover:shadow-md transition-all cursor-pointer group">
+                   <div class="w-7 h-7 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-sm shrink-0 group-hover:bg-emerald-600 group-hover:text-white transition-colors">📱</div>
+                   <span class="text-xs font-bold text-slate-700 group-hover:text-emerald-700">Оповестить жителей</span>
+                 </li>
+               </ul>
+            </div>
+            
+            <div class="mt-auto pt-2">
+              <button class="w-full py-3.5 bg-killarney-600 hover:bg-killarney-700 text-white text-sm font-bold rounded-xl shadow-lg shadow-killarney-600/20 transition-transform active:scale-[0.98]">
+                Применить стратегии
+              </button>
             </div>
           </div>
         </div>
       </section>
+      </div> <!-- End Dashboard Tab -->
+
+      <!-- Analytics Tab -->
+      <div v-show="currentTab === 'analytics'" class="space-y-6">
+        <!-- Analytics Section -->
+        <div class="flex items-center justify-between mb-4 mt-2">
+          <h2 class="text-2xl font-black text-slate-800 tracking-tight flex items-center gap-3">
+             <svg class="w-7 h-7 text-killarney-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+               <rect x="4" y="14" width="4" height="6" rx="1.5"/>
+               <rect x="10" y="8" width="4" height="12" rx="1.5"/>
+               <rect x="16" y="4" width="4" height="16" rx="1.5"/>
+             </svg>
+             Аналитика
+          </h2>
+        </div>
 
       <!-- Charts (2 graphs side by side) -->
       <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- Chart 1: Energy Usage -->
+        <!-- Chart 1: Traffic over time -->
         <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
           <div class="flex justify-between items-center mb-6">
-            <h3 class="font-semibold text-slate-800">Energy Consumption Grid</h3>
-            <select class="text-sm border border-slate-200 rounded-lg px-2 py-1 text-slate-600 bg-white">
-              <option>Last 24 Hours</option>
-              <option>Last 7 Days</option>
+            <h3 class="font-bold text-slate-800">Трафик со временем</h3>
+            <select class="text-sm border border-slate-200 rounded-lg px-2 py-1 text-slate-600 bg-white outline-none focus:ring-1 focus:ring-killarney-500 font-medium">
+              <option>За 24 часа</option>
+              <option>За 7 дней</option>
             </select>
           </div>
-          <!-- Mock Chart Container -->
-          <div class="h-64 flex items-end gap-2 px-2 relative">
-            <!-- Grid lines -->
-            <div class="absolute inset-0 flex flex-col justify-between pointer-events-none">
-              <div v-for="i in 5" :key="i" class="w-full border-t border-slate-100 h-0"></div>
-            </div>
-            <!-- Bars -->
-            <div v-for="(val, i) in chart1Data" :key="i" class="w-full relative group">
-              <div 
-                class="absolute bottom-0 w-[80%] mx-auto left-0 right-0 bg-indigo-500 rounded-t shadow-sm transition-all duration-500 group-hover:bg-indigo-600"
-                :style="`height: ${val}%`"
-              ></div>
-            </div>
-          </div>
-          <div class="flex justify-between text-xs text-slate-400 mt-3 px-2">
-            <span>00:00</span>
-            <span>06:00</span>
-            <span>12:00</span>
-            <span>18:00</span>
-            <span>24:00</span>
-          </div>
-        </div>
-
-        <!-- Chart 2: Traffic Flow -->
-        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-          <div class="flex justify-between items-center mb-6">
-            <h3 class="font-semibold text-slate-800">Traffic Flow Efficiency</h3>
-             <div class="flex gap-2">
-                <span class="flex items-center gap-1 text-xs text-slate-500"><span class="w-3 h-3 rounded bg-emerald-400"></span> Current</span>
-                <span class="flex items-center gap-1 text-xs text-slate-500"><span class="w-3 h-3 rounded bg-slate-200"></span> Expected</span>
+          <!-- Curved Area Chart Container -->
+          <div class="h-64 relative overflow-hidden flex flex-col pb-2 mt-4">
+             <div class="flex-1 w-full relative">
+               <svg viewBox="0 0 400 150" class="w-full h-full preserve-3d absolute inset-0" preserveAspectRatio="none">
+                 <defs>
+                    <linearGradient id="trafficGradient" x1="0" y1="0" x2="0" y2="1">
+                       <stop offset="0%" stop-color="#6366f1" stop-opacity="0.25"/>
+                       <stop offset="100%" stop-color="#6366f1" stop-opacity="0"/>
+                    </linearGradient>
+                 </defs>
+                 <!-- Dotted lighter line -->
+                 <path d="M0,80 C40,70 80,40 120,50 C160,60 200,90 240,80 C280,70 320,30 360,40 C380,45 390,60 400,70" fill="none" class="stroke-slate-200" stroke-width="2.5" stroke-dasharray="4 4" />
+                 
+                 <!-- Area Fill -->
+                 <path d="M0,60 C40,50 80,20 120,30 C160,40 200,70 240,60 C280,50 320,10 360,20 C380,25 390,40 400,50 L400,150 L0,150 Z" fill="url(#trafficGradient)" />
+                 
+                 <!-- Solid curve -->
+                 <path d="M0,60 C40,50 80,20 120,30 C160,40 200,70 240,60 C280,50 320,10 360,20 C380,25 390,40 400,50" fill="none" class="stroke-indigo-500" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+               </svg>
+             </div>
+             <!-- X-Axis Labels -->
+             <div class="flex justify-between text-xs text-slate-400 font-bold z-10 px-1 mt-2">
+               <span>00:00</span>
+               <span>06:00</span>
+               <span>12:00</span>
+               <span>18:00</span>
+               <span>24:00</span>
              </div>
           </div>
-          <!-- Mock Line Chart Container -->
-          <div class="h-64 relative overflow-hidden flex items-center justify-center">
-             <!-- Simulated Line Chart SVG -->
-             <svg viewBox="0 0 400 150" class="w-full h-full preserve-3d" preserveAspectRatio="none">
-               <path d="M0,130 C40,110 80,140 120,90 C160,40 200,80 240,60 C280,40 320,100 360,70 L400,60" fill="none" class="stroke-slate-200" stroke-width="2" stroke-dasharray="4 4" />
-               <path d="M0,140 C40,120 80,120 120,70 C160,20 200,60 240,40 C280,20 320,80 360,50 L400,40" fill="none" class="stroke-emerald-500" stroke-width="3" />
-               <path d="M0,150 L0,140 C40,120 80,120 120,70 C160,20 200,60 240,40 C280,20 320,80 360,50 L400,40 L400,150 Z" fill="url(#gradient)" opacity="0.2" />
-               <defs>
-                  <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stop-color="#10b981" />
-                    <stop offset="100%" stop-color="white" stop-opacity="0" />
-                  </linearGradient>
-               </defs>
-             </svg>
+        </div>
+
+        <!-- Chart 2: Air quality over time -->
+        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+          <div class="flex justify-between items-center mb-6">
+            <h3 class="font-bold text-slate-800">Качество воздуха (AQI)</h3>
+             <div class="flex gap-2">
+                <span class="flex items-center gap-1 text-xs text-slate-500 font-medium"><span class="w-3 h-3 rounded bg-amber-400"></span> PM 2.5</span>
+             </div>
           </div>
-          <div class="flex justify-between text-xs text-slate-400 mt-3">
-             <span>Mon</span>
-             <span>Tue</span>
-             <span>Wed</span>
-             <span>Thu</span>
-             <span>Fri</span>
-             <span>Sat</span>
-             <span>Sun</span>
+          <!-- Curved Area Chart Container -->
+          <div class="h-64 relative overflow-hidden flex flex-col pb-2 mt-4">
+             <div class="flex-1 w-full relative">
+               <svg viewBox="0 0 400 150" class="w-full h-full preserve-3d absolute inset-0" preserveAspectRatio="none">
+                 <defs>
+                    <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                       <stop offset="0%" stop-color="#4d9a5c" stop-opacity="0.25"/>
+                       <stop offset="100%" stop-color="#4d9a5c" stop-opacity="0"/>
+                    </linearGradient>
+                 </defs>
+                 <!-- Dotted lighter line -->
+                 <path d="M0,120 C40,105 80,100 120,65 C160,30 200,35 240,25 C280,15 320,70 360,50 C380,40 390,35 400,30" fill="none" class="stroke-slate-200" stroke-width="2.5" stroke-dasharray="4 4" />
+                 
+                 <!-- Area Fill -->
+                 <path d="M0,105 C40,85 80,90 120,45 C160,0 200,10 240,0 C280,-10 320,50 360,30 C380,20 390,15 400,10 L400,150 L0,150 Z" fill="url(#chartGradient)" />
+                 
+                 <!-- Solid green curve -->
+                 <path d="M0,105 C40,85 80,90 120,45 C160,0 200,10 240,0 C280,-10 320,50 360,30 C380,20 390,15 400,10" fill="none" class="stroke-killarney-500" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+               </svg>
+             </div>
+             <!-- X-Axis Labels -->
+             <div class="flex justify-between text-xs text-slate-400 font-bold z-10 px-1 mt-2">
+                <span>Пн</span>
+                <span>Вт</span>
+                <span>Ср</span>
+                <span>Чт</span>
+                <span>Пт</span>
+                <span>Сб</span>
+                <span>Вс</span>
+             </div>
           </div>
         </div>
       </section>
-
-      <!-- Simulation Panel (full width) -->
-      <section class="bg-indigo-900 border border-indigo-800 rounded-xl overflow-hidden shadow-lg relative text-white">
-        <!-- Cool Background Effect -->
-        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20"></div>
-        <div class="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-indigo-500 rounded-full blur-3xl opacity-30"></div>
-        
-        <div class="relative z-10 p-6">
-          <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 border-b border-indigo-800/50 pb-6">
-            <div>
-              <h2 class="text-xl font-bold text-white mb-2 flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-                </svg>
-                Traffic Routing Simulation Engine
-              </h2>
-              <p class="text-indigo-300 text-sm">Run 'what-if' scenarios to predict gridlock and redirect traffic patterns.</p>
-            </div>
-            <button class="bg-indigo-500 hover:bg-indigo-400 text-white px-6 py-2.5 rounded-lg font-medium transition-colors shadow-sm flex items-center gap-2 shadow-indigo-500/20">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
-              </svg>
-              Run Simulation
-            </button>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <!-- Parameter 1 -->
-            <div class="bg-indigo-950/50 p-5 rounded-xl border border-indigo-800/80">
-              <label class="block text-sm font-medium text-indigo-300 mb-3">Weather Condition Impact</label>
-              <div class="space-y-4">
-                <input type="range" min="0" max="100" value="75" class="w-full accent-indigo-500">
-                <div class="flex justify-between text-xs text-indigo-400">
-                  <span>Clear</span>
-                  <span>Heavy Storm</span>
-                </div>
-              </div>
-            </div>
-            
-            <!-- Parameter 2 -->
-            <div class="bg-indigo-950/50 p-5 rounded-xl border border-indigo-800/80">
-              <label class="block text-sm font-medium text-indigo-300 mb-3">Major Event Density</label>
-              <div class="space-y-4">
-                <input type="range" min="0" max="100" value="40" class="w-full accent-emerald-500">
-                <div class="flex justify-between text-xs text-indigo-400">
-                  <span>Normal</span>
-                  <span>Concert / Game Day</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Parameter 3 -->
-            <div class="bg-indigo-950/50 p-5 rounded-xl border border-indigo-800/80">
-              <label class="block text-sm font-medium text-indigo-300 mb-3">Emergency Response Priority</label>
-              <div class="flex items-center gap-4">
-                <label class="flex items-center gap-2 cursor-pointer">
-                   <input type="radio" name="priority" class="text-indigo-500 focus:ring-indigo-500 bg-indigo-900 border-indigo-700">
-                   <span class="text-sm text-indigo-200">Standard</span>
-                </label>
-                <label class="flex items-center gap-2 cursor-pointer">
-                   <input type="radio" name="priority" checked class="text-indigo-500 focus:ring-indigo-500 bg-indigo-900 border-indigo-700">
-                   <span class="text-sm text-indigo-200">High Evacuation</span>
-                </label>
-              </div>
-              <div class="mt-4 pt-4 border-t border-indigo-800/50">
-                <p class="text-xs text-indigo-400">Estimated processing time: <span class="font-mono text-emerald-400">1.2s</span></p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
+      </div> <!-- End Analytics Tab -->
+      </main>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, watch, onMounted, onUnmounted } from 'vue'
 
 const isLive = ref(true)
 const isSimulation = ref(false)
 const currentTime = ref('')
+const isMobileMenuOpen = ref(false)
+const isMapFullscreen = ref(false)
+const isAIPanelVisible = ref(true)
+const currentTab = ref('dashboard')
+let mapInstance = null
+
+watch(currentTab, (newTab) => {
+  if (newTab === 'dashboard') {
+    setTimeout(() => {
+      if (mapInstance) mapInstance.invalidateSize()
+    }, 100) // Delay to wait for UI rendering
+  }
+})
+
+const toggleFullscreen = () => {
+  isMapFullscreen.value = !isMapFullscreen.value
+  setTimeout(() => {
+    if (mapInstance) mapInstance.invalidateSize()
+  }, 300)
+}
 
 let timer
 onMounted(() => {
@@ -287,6 +344,35 @@ onMounted(() => {
   }
   updateTime()
   timer = setInterval(updateTime, 1000)
+
+  // Initialize Leaflet Map
+  const initLeafletMap = () => {
+    if (!window.L) {
+      setTimeout(initLeafletMap, 100);
+      return;
+    }
+    
+    // Clear the map container first if it already has a map (fixes hot-reload issues)
+    const mapContainer = document.getElementById('map');
+    if (mapContainer && mapContainer._leaflet_id) {
+       mapContainer._leaflet_id = null;
+       mapContainer.innerHTML = '';
+    }
+
+    mapInstance = L.map('map', { 
+      zoomControl: false,
+      attributionControl: false
+    }).setView([43.2389, 76.8897], 13);
+    
+    // Positron (Light/White) tiles for a clean, modern look
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+      subdomains: 'abcd',
+      maxZoom: 20
+    }).addTo(mapInstance);
+
+  }
+  
+  initLeafletMap();
 })
 
 onUnmounted(() => {
@@ -306,38 +392,28 @@ useHead({
   meta: [
     { name: 'description', content: 'CityMind AI operations and simulation control panel.' }
   ],
+  link: [
+    { rel: 'stylesheet', href: 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css' }
+  ],
+  script: [
+    {
+      src: 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
+      defer: true
+    }
+  ],
   bodyAttrs: {
     class: 'bg-slate-50'
   }
 })
 
 // Mock icons mapped to heroicons or similar intuitive SVG structures
-const ActivityIcon = {
-  template: `<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>`
-}
-const UsersIcon = {
-  template: `<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>`
-}
-const ChartIcon = {
-  template: `<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 13v-1m4 1v-3m4 3V8M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" /></svg>`
-}
-const ServerIcon = {
-  template: `<svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" /></svg>`
-}
+const ActivityIcon = { template: `<svg fill="none"></svg>` }
 
 const kpis = ref([
-  { title: 'Total Active Sensors', value: '42,891', trend: 2.4, icon: ActivityIcon, colorClass: 'bg-indigo-100 text-indigo-600' },
-  { title: 'Traffic Flow Rate', value: '840 v/h', trend: -1.2, icon: UsersIcon, colorClass: 'bg-emerald-100 text-emerald-600' },
-  { title: 'Grid Efficiency', value: '98.5%', trend: 0.5, icon: ChartIcon, colorClass: 'bg-blue-100 text-blue-600' },
-  { title: 'Server Load', value: '42%', trend: 4.1, icon: ServerIcon, colorClass: 'bg-purple-100 text-purple-600' },
-])
-
-const insights = ref([
-  { time: '2 mins ago', text: 'Congestion detected on I-95 Northbound. Adjusting traffic light patterns.', urgency: 'medium' },
-  { time: '14 mins ago', text: 'Power grid spike predicted in Downtown sector due to incoming storm front.', urgency: 'high' },
-  { time: '1 hr ago', text: 'Subway line A operating at 110% capacity. Deployment recommended.', urgency: 'medium' },
-  { time: '2 hrs ago', text: 'Daily synchronization with state municipal database complete.', urgency: 'low' },
-  { time: '3 hrs ago', text: 'Water pressure anomaly detected in Sector 4. Maintenance crew dispatched.', urgency: 'low' },
+  { title: 'УРОВЕНЬ ТРАФИКА', value: 'КРИТИЧНО', subtitle: '88% загруженности', emoji: '🔴', borderColor: 'border-t-rose-500', textColor: 'text-rose-600' },
+  { title: 'КАЧЕСТВО ВОЗДУХА', value: '142 AQI', subtitle: 'Нездоровый', emoji: '🟡', borderColor: 'border-t-amber-400', textColor: 'text-amber-500' },
+  { title: 'ИНДЕКС ЗДОРОВЬЯ', value: '92/100', subtitle: 'Стабильно', emoji: '🟢', borderColor: 'border-t-emerald-500', textColor: 'text-emerald-600' },
+  { title: 'АКТИВНЫЕ АЛЕРТЫ', value: '3', subtitle: 'Требуют внимания', emoji: '⚠️', borderColor: 'border-t-orange-500', textColor: 'text-orange-600' },
 ])
 
 const chart1Data = ref([45, 60, 30, 85, 90, 70, 50, 65, 80, 40, 55, 75, 45, 60, 30, 85, 90, 70, 50, 65, 80, 40, 55, 75])
