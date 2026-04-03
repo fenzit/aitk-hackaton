@@ -319,6 +319,19 @@ def main():
             print(f"   {k:25s} = {v}")
 
         insight = analyze(raw.copy())
+        BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
+
+        # В конце цикла, после вычисления insight:
+        try:
+            text = f"{insight['level_ru']} уровень. {insight['problems'][0]}. Рекомендация: {insight['actions'][0]}"
+            httpx.post(
+                f"{BACKEND_URL}/internal/llm-insight",
+                json={"text": text},
+                timeout=5,
+            )
+            print(f"✅ Отправлено на бэк")
+        except Exception as e:
+            print(f"⚠ Бэк недоступен: {e}")
 
         print(f"\n🧠 ИНСАЙТ:")
         print(f"   Уровень:           {insight['level']} ({insight['level_ru']})")
