@@ -21,6 +21,7 @@ export default defineNuxtConfig({
     classSuffix: ''
   },
   runtimeConfig: {
+    apiUrl: process.env.NUXT_API_URL || 'http://localhost:8000', // только SSR
     public: {
       wsUrl: process.env.NUXT_PUBLIC_WS_URL || 'ws://localhost:8000/ws/city',
       apiUrl: process.env.NUXT_PUBLIC_API_URL || 'http://localhost:8000',

@@ -138,6 +138,28 @@
           <span class="font-bold tracking-wide text-sm hidden sm:block">CITY INSIGHT</span>
         </button>
 
+        <!-- Simulation UX Floating Panel -->
+        <div class="absolute bottom-6 left-4 z-40 bg-white/95 dark:bg-black-950/95 backdrop-blur-md p-4 rounded-2xl border border-slate-200 dark:border-black-800 shadow-2xl pointer-events-auto flex flex-col gap-3 min-w-[280px]">
+          <div class="flex items-center justify-between pointer-events-auto">
+             <h3 class="font-black text-slate-800 dark:text-black-100 text-[11px] sm:text-xs flex items-center gap-2 uppercase tracking-widest">
+               <span class="text-indigo-500 text-base">🎮</span> Панель симуляций
+             </h3>
+             <span v-if="isSimulating" class="text-[10px] font-bold text-indigo-500 animate-pulse bg-indigo-50 dark:bg-indigo-950/30 px-2 py-1 rounded-full border border-indigo-200 dark:border-indigo-800">ПЕРЕСЧЕТ...</span>
+          </div>
+          
+          <div class="flex sm:flex-row flex-col gap-2">
+            <button @click="triggerSim('close_road')" class="flex-1 px-3 py-2.5 bg-slate-100 dark:bg-black-900 hover:bg-slate-200 dark:hover:bg-black-800 border border-slate-200 dark:border-black-700 rounded-xl text-xs font-bold transition-all text-slate-700 dark:text-black-200 active:scale-95 flex items-center justify-center gap-2">
+              🛑 Закрыть дорогу
+            </button>
+            <button @click="triggerSim('add_buses')" class="flex-1 px-3 py-2.5 bg-emerald-50 dark:bg-emerald-950/30 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 border border-emerald-200 dark:border-emerald-800 rounded-xl text-xs font-bold transition-all text-emerald-700 dark:text-emerald-400 active:scale-95 flex items-center justify-center gap-2">
+              🚌 Добавить автобусы
+            </button>
+            <button @click="triggerSim('emergency')" class="flex-1 px-3 py-2.5 bg-rose-50 dark:bg-rose-950/30 hover:bg-rose-100 dark:hover:bg-rose-900/50 border border-rose-200 dark:border-rose-800 rounded-xl text-xs font-bold transition-all text-rose-700 dark:text-rose-400 active:scale-95 flex items-center justify-center gap-2 shadow-sm shadow-rose-500/20">
+              ⚠️ ЧП
+            </button>
+          </div>
+        </div>
+
         <!-- AI Insight Panel: Floating HUD overlay on the right -->
         <div 
           :class="['absolute bottom-0 lg:bottom-auto lg:top-16 right-0 lg:right-4 w-full lg:w-96 bg-white dark:bg-black-950/95 backdrop-blur-lg lg:rounded-2xl border-t-4 lg:border-t-0 lg:border-l-[6px] border-rose-500 shadow-2xl flex flex-col h-[400px] lg:h-[calc(100%-5rem)] z-40 pointer-events-auto transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]', 
@@ -254,6 +276,55 @@
             </div>
           </div>
         </section>
+
+        <!-- 20 Points Analytics History -->
+        <div class="mt-8 bg-white dark:bg-black-950 p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-black-800 shadow-sm relative overflow-hidden transition-all hover:border-indigo-300 dark:hover:border-indigo-800/50">
+          <div class="flex sm:flex-row flex-col items-start sm:items-center justify-between mb-8 gap-4">
+            <div>
+               <h3 class="text-xl font-black text-slate-800 dark:text-black-100 flex items-center gap-3">
+                 <span class="p-2 bg-indigo-50 dark:bg-indigo-950/30 rounded-lg text-indigo-500"><svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" /></svg></span>
+                 История состояний (последние 20 точек)
+               </h3>
+               <p class="text-sm text-slate-500 dark:text-black-400 mt-2 font-medium">Динамика изменения уровня выбросов и загруженности во времени.</p>
+            </div>
+            <div class="bg-indigo-50 dark:bg-indigo-950/30 text-indigo-600 px-4 py-2 rounded-xl text-xs font-bold border border-indigo-200 dark:border-indigo-800/50 uppercase tracking-widest flex items-center gap-2">
+               <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+               Аналитика активна
+            </div>
+          </div>
+          
+          <div class="h-64 w-full relative group">
+             <!-- Background Grid Lines -->
+             <div class="absolute inset-x-0 inset-y-6 flex flex-col justify-between opacity-30 pointer-events-none z-0">
+               <div class="border-b border-slate-300 dark:border-black-700 w-full border-dashed"></div>
+               <div class="border-b border-slate-300 dark:border-black-700 w-full border-dashed"></div>
+               <div class="border-b border-slate-300 dark:border-black-700 w-full border-dashed"></div>
+               <div class="border-b border-slate-300 dark:border-black-700 w-full border-dashed"></div>
+             </div>
+             
+             <!-- Reactive Bars derived from chart1Data -->
+             <div class="w-full h-full flex items-end justify-between px-1 pb-6 gap-1 sm:gap-2 relative z-10">
+                <div v-for="(val, idx) in chart1Data.slice(-20)" :key="idx" class="w-full h-full relative group/bar flex items-end justify-center">
+                   <!-- Tooltip -->
+                   <div class="absolute bottom-full mb-2 opacity-0 group-hover/bar:opacity-100 transition-opacity bg-slate-800 text-white text-[11px] font-bold py-1.5 px-2.5 rounded-lg whitespace-nowrap shadow-xl pointer-events-none z-20">
+                     Значение: {{ val }}
+                     <svg class="absolute text-slate-800 h-2 w-full left-0 top-full" x="0px" y="0px" viewBox="0 0 255 255" xml:space="preserve"><polygon class="fill-current" points="0,0 127.5,127.5 255,0"/></svg>
+                   </div>
+                   <!-- Value Bar -->
+                   <div class="w-full bg-gradient-to-t from-indigo-600 to-sky-400 rounded-md transition-all duration-700 ease-in-out group-hover/bar:from-sky-400 group-hover/bar:to-sky-300 group-hover/bar:-translate-y-1" :style="{height: `${val}%`}"></div>
+                </div>
+             </div>
+             
+             <!-- X-Axis Labels -->
+             <div class="absolute bottom-0 left-0 right-0 flex justify-between text-[11px] font-bold text-slate-400 dark:text-black-500 uppercase tracking-widest px-2">
+               <span>-20 циклов</span>
+               <span class="hidden sm:inline">-15</span>
+               <span>-10</span>
+               <span class="hidden sm:inline">-5</span>
+               <span class="text-indigo-500">Сейчас</span>
+             </div>
+          </div>
+        </div>
       </div>
 
       <!-- Analytics Tab -->
@@ -431,10 +502,51 @@ onMounted(() => {
       ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
       : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
       
-    mapTileLayer = L.tileLayer(tileUrl, {
+      mapTileLayer = L.tileLayer(tileUrl, {
       subdomains: 'abcd',
       maxZoom: 20
     }).addTo(mapInstance);
+
+    // Добавление "точек проблем" (заметные точки)
+    const problemDots = [
+      [43.2420, 76.8950], [43.2350, 76.8800], [43.2450, 76.8850],
+      [43.2300, 76.8920], [43.2500, 76.9150], [43.2395, 76.8910],
+      // Новые точки вокруг центра
+      [43.2480, 76.8990], [43.2370, 76.9050], [43.2250, 76.8850],
+      [43.2310, 76.9150], [43.2450, 76.9200], [43.2330, 76.8750],
+      // Точки дальше (Восток / ВОАД)
+      [43.2550, 76.9550], [43.2400, 76.9600], [43.2350, 76.9500],
+      // Точки дальше (Запад / Саин-Абая)
+      [43.2200, 76.8550], [43.2250, 76.8450], [43.2150, 76.8650],
+      // Точки (Юг / Аль-Фараби)
+      [43.2150, 76.9250], [43.2100, 76.9350], [43.2050, 76.9050],
+      // Точки (Север / Суюнбая-Сейфуллина)
+      [43.2750, 76.9100], [43.2850, 76.9300], [43.2650, 76.9450],
+      [43.3000, 76.9050], [43.2600, 76.8950]
+    ];
+
+    const incidentTypes = [
+      '<b>Крупное ДТП</b><br>Заблокировано 2 полосы',
+      '<b>Затор (Traffic Jam)</b><br>Скорость потока < 10 км/ч',
+      '<b>Дорожные работы</b><br>Ремонт инфраструктуры',
+      '<b>Остановка движения</b><br>Сбой умного светофора',
+      '<b>Повышенный выброс AQI</b><br>Локальное загрязнение в 2 раза',
+      '<b>Авария с общественным транспортом</b><br>Требуется перенаправление',
+      '<b>Сложные метеоусловия</b><br>Затопление / гололед'
+    ];
+
+    problemDots.forEach((coord, idx) => {
+      // Pick pseudo-randomly to ensure variety across the map
+      const incident = incidentTypes[(idx * 3 + 1) % incidentTypes.length];
+      L.circleMarker(coord, {
+        radius: 8,
+        fillColor: "#ef4444",
+        color: "#ffffff",
+        weight: 3,
+        opacity: 1,
+        fillOpacity: 0.9
+      }).addTo(mapInstance).bindPopup(incident);
+    });
   }
   
   initLeafletMap();
@@ -491,6 +603,55 @@ const kpis = ref([
 ])
 
 const chart1Data = ref([45, 60, 30, 85, 90, 70, 50, 65, 80, 40, 55, 75, 45, 60, 30, 85, 90, 70, 50, 65, 80, 40, 55, 75])
+
+const isSimulating = ref(false)
+
+const triggerSim = (action) => {
+  if (isSimulating.value) return;
+  isSimulating.value = true;
+  
+  setTimeout(() => {
+    isSimulating.value = false;
+    
+    // Dynamic WOW-effect: recalculate KPIs based on actions
+    if (action === 'close_road') {
+      kpis.value[0].value = 'ПЛОТНЫЙ';
+      kpis.value[0].subtitle = '65% загруженности';
+      kpis.value[0].textColor = 'text-amber-500';
+      kpis.value[0].borderColor = 'border-t-amber-400';
+      kpis.value[1].value = '110 AQI';
+      kpis.value[1].subtitle = 'Умеренный';
+      kpis.value[1].textColor = 'text-amber-500';
+      kpis.value[1].borderColor = 'border-t-amber-400';
+      
+      // Update charts slightly
+      chart1Data.value = chart1Data.value.map(v => Math.min(100, v + Math.floor(Math.random() * 15)));
+    } else if (action === 'add_buses') {
+      kpis.value[0].value = 'НОРМА';
+      kpis.value[0].subtitle = '45% загруженности';
+      kpis.value[0].textColor = 'text-emerald-600';
+      kpis.value[0].borderColor = 'border-t-emerald-500';
+      kpis.value[1].value = '80 AQI';
+      kpis.value[1].subtitle = 'Хороший';
+      kpis.value[1].textColor = 'text-emerald-600';
+      kpis.value[1].borderColor = 'border-t-emerald-500';
+      
+      chart1Data.value = chart1Data.value.map(v => Math.max(10, v - Math.floor(Math.random() * 20)));
+    } else if (action === 'emergency') {
+      kpis.value[0].value = 'КОЛЛАПС';
+      kpis.value[0].subtitle = '98% загруженности';
+      kpis.value[0].textColor = 'text-rose-700';
+      kpis.value[0].borderColor = 'border-t-rose-600';
+      kpis.value[1].value = '210 AQI';
+      kpis.value[1].subtitle = 'Опасно';
+      kpis.value[1].textColor = 'text-rose-600';
+      kpis.value[1].borderColor = 'border-t-rose-500';
+      kpis.value[3].value = '7'; // Active alerts spike
+
+      chart1Data.value = chart1Data.value.map(v => Math.min(100, v + Math.floor(Math.random() * 40)));
+    }
+  }, 1200)
+}
 </script>
 
 <style scoped>
