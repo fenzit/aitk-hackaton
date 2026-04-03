@@ -60,14 +60,9 @@
             <select v-if="cityData" class="bg-transparent border-none text-sm font-medium text-slate-700 dark:text-black-200 outline-none cursor-pointer group-hover:text-killarney-600 appearance-none pr-6 relative z-10 w-fit">
               <option>Алматы</option>
             </select>
-            <div v-if="isConnected" class="flex items-center gap-1.5 text-[10px] font-bold text-emerald-500 bg-emerald-50 dark:bg-emerald-950/30 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800/50">
-               <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-               ONLINE
-            </div>
-            <div v-else class="flex items-center gap-1.5 text-[10px] font-bold text-rose-500 bg-rose-50 dark:bg-rose-950/30 px-2 py-0.5 rounded-full border border-rose-200 dark:border-rose-800/50">
-               <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
-               OFFLINE
-            </div>
+            
+
+            <!-- Removed old Online indicator, now combined with Switcher -->
             <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none text-slate-400 dark:text-black-500 group-hover:text-killarney-500">
                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
             </div>
@@ -146,27 +141,6 @@
           <span class="font-bold tracking-wide text-sm hidden sm:block">CITY INSIGHT</span>
         </button>
 
-        <!-- Simulation UX Floating Panel -->
-        <div class="absolute bottom-6 left-4 z-40 bg-white/95 dark:bg-black-950/95 backdrop-blur-md p-4 rounded-2xl border border-slate-200 dark:border-black-800 shadow-2xl pointer-events-auto flex flex-col gap-3 min-w-[280px]">
-          <div class="flex items-center justify-between pointer-events-auto">
-             <h3 class="font-black text-slate-800 dark:text-black-100 text-[11px] sm:text-xs flex items-center gap-2 uppercase tracking-widest">
-               <span class="text-indigo-500 text-base">🎮</span> Панель симуляций
-             </h3>
-             <span v-if="isSimulating" class="text-[10px] font-bold text-indigo-500 animate-pulse bg-indigo-50 dark:bg-indigo-950/30 px-2 py-1 rounded-full border border-indigo-200 dark:border-indigo-800">ПЕРЕСЧЕТ...</span>
-          </div>
-          
-          <div class="flex sm:flex-row flex-col gap-2">
-            <button @click="triggerSim('close_road')" class="flex-1 px-3 py-2.5 bg-slate-100 dark:bg-black-900 hover:bg-slate-200 dark:hover:bg-black-800 border border-slate-200 dark:border-black-700 rounded-xl text-xs font-bold transition-all text-slate-700 dark:text-black-200 active:scale-95 flex items-center justify-center gap-2">
-              🛑 Закрыть дорогу
-            </button>
-            <button @click="triggerSim('add_buses')" class="flex-1 px-3 py-2.5 bg-emerald-50 dark:bg-emerald-950/30 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 border border-emerald-200 dark:border-emerald-800 rounded-xl text-xs font-bold transition-all text-emerald-700 dark:text-emerald-400 active:scale-95 flex items-center justify-center gap-2">
-              🚌 Добавить автобусы
-            </button>
-            <button @click="triggerSim('emergency')" class="flex-1 px-3 py-2.5 bg-rose-50 dark:bg-rose-950/30 hover:bg-rose-100 dark:hover:bg-rose-900/50 border border-rose-200 dark:border-rose-800 rounded-xl text-xs font-bold transition-all text-rose-700 dark:text-rose-400 active:scale-95 flex items-center justify-center gap-2 shadow-sm shadow-rose-500/20">
-              ⚠️ ЧП
-            </button>
-          </div>
-        </div>
 
         <!-- AI Insight Panel: Floating HUD overlay on the right -->
         <div 
@@ -223,11 +197,6 @@
                </ul>
             </div>
             
-            <div class="mt-auto pt-2">
-              <button class="w-full py-3.5 bg-killarney-600 hover:bg-killarney-700 text-white text-sm font-bold rounded-xl shadow-lg shadow-killarney-600/20 transition-transform active:scale-[0.98]">
-                Применить стратегии
-              </button>
-            </div>
           </div>
         </div>
       </section>
@@ -341,7 +310,6 @@
 
       <!-- Analytics Tab -->
       <div v-show="currentTab === 'analytics'" class="space-y-6">
-        <!-- Analytics Section -->
         <div class="flex items-center justify-between mb-4 mt-2">
           <h2 class="text-2xl font-black text-slate-800 dark:text-black-100 tracking-tight flex items-center gap-3">
              <svg class="w-7 h-7 text-killarney-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -351,20 +319,75 @@
              </svg>
              Аналитика
           </h2>
+          
+          <div class="flex items-center gap-2 bg-indigo-50 dark:bg-indigo-950/30 px-4 py-2 rounded-xl border border-indigo-200 dark:border-indigo-800/50">
+            <span class="relative flex h-2 w-2">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+            </span>
+            <span class="text-[10px] font-black text-indigo-600 uppercase tracking-widest">Прогноз активен</span>
+          </div>
+        </div>
+
+        <!-- Dynamic Simulation Scenarios moved to Analytics -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+           <div 
+             v-for="(scenario, key) in scenarios" 
+             :key="key"
+             @mouseenter="hoveredScenario = key"
+             @mouseleave="hoveredScenario = null"
+             @click="triggerSim(key)"
+             :class="[
+               'p-5 rounded-2xl border transition-all cursor-pointer group relative overflow-hidden h-full flex flex-col',
+               hoveredScenario === key 
+                ? 'bg-slate-900 border-slate-900 shadow-xl -translate-y-1' 
+                : 'bg-white dark:bg-black-950 border-slate-200 dark:border-black-800 hover:border-slate-400'
+             ]"
+           >
+              <div class="flex items-center justify-between mb-4 relative z-10">
+                <div :class="[
+                  'w-8 h-8 rounded-lg flex items-center justify-center transition-colors',
+                  hoveredScenario === key ? 'bg-white/10' : 'bg-slate-100 dark:bg-black-900'
+                ]">
+                  <div v-if="key === 'close_road'" :class="['w-2.5 h-2.5 rounded-full', hoveredScenario === key ? 'bg-rose-400 shadow-[0_0_10px_rgba(244,63,94,0.6)]' : 'bg-rose-500']"></div>
+                  <div v-else-if="key === 'increase_buses'" :class="['w-2.5 h-2.5 rounded-sm', hoveredScenario === key ? 'bg-indigo-400 shadow-[0_0_10px_rgba(99,102,241,0.6)]' : 'bg-indigo-500']"></div>
+                  <div v-else-if="key === 'restrict_diesel'" :class="['w-2.5 h-2.5 rotate-45 rounded-[1px]', hoveredScenario === key ? 'bg-amber-400 shadow-[0_0_10px_rgba(245,158,11,0.6)]' : 'bg-amber-500']"></div>
+                  <div v-else-if="key === 'green_wave'" :class="['w-3 h-1 rounded-full', hoveredScenario === key ? 'bg-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.6)]' : 'bg-emerald-500']"></div>
+                  <div v-else :class="['w-2.5 h-2.5 rounded-full bg-slate-400']"></div>
+                </div>
+                
+                <div v-if="hoveredScenario === key" class="bg-white/10 px-2.5 py-1 rounded-md text-[7px] font-black text-white uppercase tracking-[0.1em] border border-white/10">
+                  Forecast
+                </div>
+              </div>
+              
+              <h3 :class="['font-black text-[10px] uppercase tracking-widest mb-2 relative z-10 transition-colors', hoveredScenario === key ? 'text-white' : 'text-slate-800 dark:text-black-100']">
+                {{ scenario.label }}
+              </h3>
+              
+              <p :class="['text-[9px] font-medium leading-relaxed relative z-10 transition-colors', hoveredScenario === key ? 'text-slate-400' : 'text-slate-500 dark:text-black-400']">
+                {{ scenario.prediction }}
+              </p>
+           </div>
         </div>
 
       <!-- Charts (2 graphs side by side) -->
       <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Chart 1: Traffic over time -->
-        <div class="bg-white dark:bg-black-950 p-6 rounded-xl border border-slate-200 dark:border-black-800 shadow-sm">
+        <div class="bg-white dark:bg-black-950 p-6 rounded-xl border border-slate-200 dark:border-black-800 shadow-sm relative overflow-hidden">
           <div class="flex justify-between items-center mb-6">
             <h3 class="font-bold text-slate-800 dark:text-black-100">Трафик со временем</h3>
-            <select class="text-sm border border-slate-200 dark:border-black-800 rounded-lg px-2 py-1 text-slate-600 dark:text-black-300 bg-white dark:bg-black-950 outline-none focus:ring-1 focus:ring-killarney-500 font-medium">
-              <option>За 24 часа</option>
-              <option>За 7 дней</option>
-            </select>
+            <div class="flex items-center gap-3">
+              <div v-if="hoveredScenario" class="flex items-center gap-2 text-[10px] font-black text-indigo-500 bg-indigo-50 dark:bg-indigo-950/30 px-2 py-1 rounded-lg border border-indigo-200 animate-pulse">
+                <span>ПРЕДИКТИВНАЯ ГИПОТЕЗА</span>
+              </div>
+              <select class="text-sm border border-slate-200 dark:border-black-800 rounded-lg px-2 py-1 text-slate-600 dark:text-black-300 bg-white dark:bg-black-950 outline-none focus:ring-1 focus:ring-killarney-500 font-medium">
+                <option>За 24 часа</option>
+                <option>За 7 дней</option>
+              </select>
+            </div>
           </div>
-          <!-- Curved Area Chart Container -->
+          
           <div class="h-64 relative overflow-hidden flex flex-col pb-2 mt-4">
              <div class="flex-1 w-full relative">
                <svg viewBox="0 0 400 150" class="w-full h-full preserve-3d absolute inset-0" preserveAspectRatio="none">
@@ -373,15 +396,36 @@
                        <stop offset="0%" stop-color="#6366f1" stop-opacity="0.25"/>
                        <stop offset="100%" stop-color="#6366f1" stop-opacity="0"/>
                     </linearGradient>
+                    <linearGradient id="predictionGradient" x1="0" y1="0" x2="0" y2="1">
+                       <stop offset="0%" stop-color="#f43f5e" stop-opacity="0.2"/>
+                       <stop offset="100%" stop-color="#f43f5e" stop-opacity="0"/>
+                    </linearGradient>
                  </defs>
-                 <!-- Dotted lighter line -->
-                 <path d="M0,80 C40,70 80,40 120,50 C160,60 200,90 240,80 C280,70 320,30 360,40 C380,45 390,60 400,70" fill="none" class="stroke-slate-200" stroke-width="2.5" stroke-dasharray="4 4" />
                  
-                 <!-- Area Fill -->
-                 <path d="M0,60 C40,50 80,20 120,30 C160,40 200,70 240,60 C280,50 320,10 360,20 C380,25 390,40 400,50 L400,150 L0,150 Z" fill="url(#trafficGradient)" />
+                 <!-- Area Fill (Active) -->
+                 <path :d="trafficPath" fill="url(#trafficGradient)" class="transition-all duration-700 ease-in-out" />
                  
-                 <!-- Solid curve -->
-                 <path d="M0,60 C40,50 80,20 120,30 C160,40 200,70 240,60 C280,50 320,10 360,20 C380,25 390,40 400,50" fill="none" class="stroke-indigo-500" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+                 <!-- Prediction Path (Visible on Hover) -->
+                 <path 
+                   v-if="hoveredScenario" 
+                   :d="trafficPredictionPath" 
+                   fill="url(#predictionGradient)" 
+                   class="animate-pulse"
+                 />
+                 
+                 <!-- Solid curve (Active) -->
+                 <path :d="trafficPathMain" fill="none" class="stroke-indigo-500 transition-all duration-700 ease-in-out" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+                 
+                 <!-- Solid prediction curve -->
+                 <path 
+                   v-if="hoveredScenario" 
+                   :d="trafficPredictionPathMain" 
+                   fill="none" 
+                   class="stroke-rose-500 stroke-dasharray-4 transition-all duration-500" 
+                   stroke-width="3" 
+                   stroke-linecap="round" 
+                   stroke-dasharray="8 4"
+                 />
                </svg>
              </div>
              <!-- X-Axis Labels -->
@@ -395,43 +439,66 @@
           </div>
         </div>
 
-        <!-- Chart 2: Air quality over time -->
-        <div class="bg-white dark:bg-black-950 p-6 rounded-xl border border-slate-200 dark:border-black-800 shadow-sm">
+        <!-- Chart 2: AQI over time -->
+        <div class="bg-white dark:bg-black-950 p-6 rounded-xl border border-slate-200 dark:border-black-800 shadow-sm relative overflow-hidden">
           <div class="flex justify-between items-center mb-6">
             <h3 class="font-bold text-slate-800 dark:text-black-100">Качество воздуха (AQI)</h3>
-             <div class="flex gap-2">
-                <span class="flex items-center gap-1 text-xs text-slate-500 dark:text-black-400 font-medium"><span class="w-3 h-3 rounded bg-amber-400"></span> PM 2.5</span>
-             </div>
+            <div class="flex items-center gap-3">
+              <div v-if="hoveredScenario" class="flex items-center gap-2 text-[10px] font-black text-emerald-500 bg-emerald-50 dark:bg-emerald-950/30 px-2 py-1 rounded-lg border border-emerald-200 animate-pulse">
+                <span>ЭКО-ПРОГНОЗ</span>
+              </div>
+              <span class="flex items-center gap-1.5 text-xs font-bold text-amber-500 bg-amber-50 dark:bg-amber-950/30 px-2 py-1 rounded-md">
+                <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                PM 2.5
+              </span>
+            </div>
           </div>
-          <!-- Curved Area Chart Container -->
+          
           <div class="h-64 relative overflow-hidden flex flex-col pb-2 mt-4">
              <div class="flex-1 w-full relative">
                <svg viewBox="0 0 400 150" class="w-full h-full preserve-3d absolute inset-0" preserveAspectRatio="none">
                  <defs>
-                    <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
-                       <stop offset="0%" stop-color="#4d9a5c" stop-opacity="0.25"/>
-                       <stop offset="100%" stop-color="#4d9a5c" stop-opacity="0"/>
+                    <linearGradient id="airGradient" x1="0" y1="0" x2="0" y2="1">
+                       <stop offset="0%" stop-color="#10b981" stop-opacity="0.25"/>
+                       <stop offset="100%" stop-color="#10b981" stop-opacity="0"/>
                     </linearGradient>
                  </defs>
-                 <!-- Dotted lighter line -->
-                 <path d="M0,120 C40,105 80,100 120,65 C160,30 200,35 240,25 C280,15 320,70 360,50 C380,40 390,35 400,30" fill="none" class="stroke-slate-200" stroke-width="2.5" stroke-dasharray="4 4" />
                  
-                 <!-- Area Fill -->
-                 <path d="M0,105 C40,85 80,90 120,45 C160,0 200,10 240,0 C280,-10 320,50 360,30 C380,20 390,15 400,10 L400,150 L0,150 Z" fill="url(#chartGradient)" />
+                 <!-- Area Fill (Active) -->
+                 <path :d="airPath" fill="url(#airGradient)" class="transition-all duration-700 ease-in-out" />
                  
-                 <!-- Solid green curve -->
-                 <path d="M0,105 C40,85 80,90 120,45 C160,0 200,10 240,0 C280,-10 320,50 360,30 C380,20 390,15 400,10" fill="none" class="stroke-killarney-500" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+                 <!-- Prediction Path (Visible on Hover) -->
+                 <path 
+                   v-if="hoveredScenario" 
+                   :d="airPredictionPath" 
+                   fill="rgba(16, 185, 129, 0.1)" 
+                   class="animate-pulse"
+                 />
+                 
+                 <!-- Solid curve (Active) -->
+                 <path :d="airPathMain" fill="none" class="stroke-emerald-500 transition-all duration-700 ease-in-out" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+                 
+                 <!-- Solid prediction curve -->
+                 <path 
+                   v-if="hoveredScenario" 
+                   :d="airPredictionPathMain" 
+                   fill="none" 
+                   class="stroke-emerald-400 stroke-dasharray-4 transition-all duration-500" 
+                   stroke-width="3" 
+                   stroke-linecap="round" 
+                   stroke-dasharray="8 4"
+                 />
                </svg>
              </div>
-             <!-- X-Axis Labels -->
+             <!-- X-Axis Labels (Days) -->
              <div class="flex justify-between text-xs text-slate-400 dark:text-black-500 font-bold z-10 px-1 mt-2">
-                <span>Пн</span>
-                <span>Вт</span>
-                <span>Ср</span>
-                <span>Чт</span>
-                <span>Пт</span>
-                <span>Сб</span>
-                <span>Вс</span>
+               <span>Пн</span>
+               <span>Вт</span>
+               <span>Ср</span>
+               <span>Чт</span>
+               <span>Пт</span>
+               <span>Сб</span>
+               <span>Вс</span>
              </div>
           </div>
         </div>
@@ -446,10 +513,10 @@
 import { ref, watch, onMounted, onUnmounted, computed } from 'vue'
 import { useCityData } from '../composables/useCityData'
 
-const { data: cityData, isConnected } = useCityData()
+const { data: cityData, scenarios, isConnected } = useCityData()
 
-const isLive = ref(true)
-const isSimulation = ref(false)
+const systemMode = ref('live')
+const hoveredScenario = ref(null)
 const currentTime = ref('')
 const isMobileMenuOpen = ref(false)
 const isInfoMenuOpen = ref(false)
@@ -581,11 +648,7 @@ onUnmounted(() => {
 })
 
 const toggleStatus = () => {
-  isLive.value = !isLive.value
-}
-
-const toggleSimulation = () => {
-  isSimulation.value = !isSimulation.value
+  systemMode.value = systemMode.value === 'live' ? 'simulation' : 'live'
 }
 
 useHead({
@@ -609,6 +672,101 @@ useHead({
 
 // Mock icons mapped to heroicons or similar intuitive SVG structures
 const ActivityIcon = { template: `<svg fill="none"></svg>` }
+
+// Dynamic Chart Helper Paths (Truly Data Driven)
+const generatePath = (dataArr, useArea = false, modifier = 0) => {
+  if (!dataArr || dataArr.length === 0) return '';
+  const width = 400;
+  const height = 150;
+  const points = dataArr.map((v, i) => {
+    const x = (i / (dataArr.length - 1)) * width;
+    // Apply modifier then scale to 0-100 range and map to 0-height
+    const valWithMod = Math.min(100, Math.max(0, v + modifier));
+    const y = height - (valWithMod * 1.2) - 20; // 1.2 scale to leave room at top
+    return `${x},${y}`;
+  });
+  
+  if (points.length < 2) return '';
+  
+  // Create a smooth curve using cubic splines or simple lines for now (L)
+  // Actually, let's use a simple polyline or Q/C for smoothness. 
+  // For a hackathon, a polyline is safe, but let's try a simplified curve.
+  let path = `M${points[0]}`;
+  for (let i = 1; i < points.length; i++) {
+    path += ` L${points[i]}`;
+  }
+  
+  if (useArea) {
+    path += ` L${width},${height} L0,${height} Z`;
+  }
+  return path;
+}
+
+const trafficPath = computed(() => {
+  const data = chart1Data.value.length > 0 ? chart1Data.value : [40, 50, 45, 60, 55, 70, 65];
+  return generatePath(data, true);
+})
+
+const trafficPathMain = computed(() => {
+  const data = chart1Data.value.length > 0 ? chart1Data.value : [40, 50, 45, 60, 55, 70, 65];
+  return generatePath(data, false);
+})
+
+const trafficPredictionPath = computed(() => {
+  if (!hoveredScenario.value) return '';
+  let mod = 0;
+  if (hoveredScenario.value === 'close_road') mod = 25;
+  if (hoveredScenario.value === 'increase_buses') mod = -20;
+  if (hoveredScenario.value === 'green_wave') mod = -15;
+  if (hoveredScenario.value === 'restrict_diesel') mod = -5;
+
+  const data = chart1Data.value.length > 0 ? chart1Data.value : [40, 50, 45, 60, 55, 70, 65];
+  return generatePath(data, true, mod);
+})
+
+const trafficPredictionPathMain = computed(() => {
+  if (!hoveredScenario.value) return '';
+  let mod = 0;
+  if (hoveredScenario.value === 'close_road') mod = 25;
+  if (hoveredScenario.value === 'increase_buses') mod = -20;
+  if (hoveredScenario.value === 'green_wave') mod = -15;
+  if (hoveredScenario.value === 'restrict_diesel') mod = -5;
+
+  const data = chart1Data.value.length > 0 ? chart1Data.value : [40, 50, 45, 60, 55, 70, 65];
+  return generatePath(data, false, mod);
+})
+
+const airPath = computed(() => {
+  const data = chart2Data.value.length > 0 ? chart2Data.value : [30, 35, 45, 55, 65, 60, 70];
+  return generatePath(data, true);
+})
+
+const airPathMain = computed(() => {
+  const data = chart2Data.value.length > 0 ? chart2Data.value : [30, 35, 45, 55, 65, 60, 70];
+  return generatePath(data, false);
+})
+
+const airPredictionPath = computed(() => {
+  if (!hoveredScenario.value) return '';
+  let mod = 0;
+  if (hoveredScenario.value === 'restrict_diesel') mod = -30;
+  if (hoveredScenario.value === 'increase_buses') mod = -15;
+  if (hoveredScenario.value === 'close_road') mod = -10; // assuming less cars in center = better air
+
+  const data = chart2Data.value.length > 0 ? chart2Data.value : [30, 35, 45, 55, 65, 60, 70];
+  return generatePath(data, true, mod);
+})
+
+const airPredictionPathMain = computed(() => {
+  if (!hoveredScenario.value) return '';
+  let mod = 0;
+  if (hoveredScenario.value === 'restrict_diesel') mod = -30;
+  if (hoveredScenario.value === 'increase_buses') mod = -15;
+  if (hoveredScenario.value === 'close_road') mod = -10;
+
+  const data = chart2Data.value.length > 0 ? chart2Data.value : [30, 35, 45, 55, 65, 60, 70];
+  return generatePath(data, false, mod);
+})
 
 const kpis = computed(() => {
   if (!cityData.value) {
@@ -665,30 +823,24 @@ const kpis = computed(() => {
   ]
 })
 
-const chart1Data = computed(() => {
-  if (!cityData.value) return Array(24).fill(0)
-  // Extract traffic_index from history
-  return cityData.value.history.map(p => p.traffic_index)
-})
+const chart1Data = computed(() => cityData.value?.history.map(h => h.traffic_index) || [])
+const chart2Data = computed(() => cityData.value?.history.map(h => h.air_quality_index) || [])
 
 const isSimulating = computed(() => cityData.value?.insights.is_simulation || false)
 
-const triggerSim = async (action) => {
+const triggerSim = async (key) => {
   if (isSimulating.value) return;
   
   const config = useRuntimeConfig()
-  const scenarioMap = {
-    'close_road': 'close_road',
-    'add_buses': 'increase_buses',
-    'emergency': 'restrict_diesel' // mapping to some backend scenario
-  }
 
   try {
-    await fetch(`${config.public.apiUrl}/api/simulate`, {
+    const response = await fetch(`${config.public.apiUrl}/api/simulate`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ scenario: scenarioMap[action] || action })
+      body: JSON.stringify({ scenario: key })
     })
+    
+    if (!response.ok) throw new Error('Simulation trigger failed')
   } catch (err) {
     console.error('Error triggering simulation:', err)
   }

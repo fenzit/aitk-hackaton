@@ -26,6 +26,11 @@ export interface CityHistoryPoint {
   noise_level: number
 }
 
+export interface CityScenario {
+  label: string
+  prediction: string
+}
+
 export interface CitySnapshot {
   timestamp: number
   metrics: CityMetrics
@@ -37,6 +42,7 @@ export interface CitySnapshot {
 export const useCityData = () => {
   const config = useRuntimeConfig()
   const data = ref<CitySnapshot | null>(null)
+  const scenarios = ref<Record<string, CityScenario>>({})
   const isConnected = ref(false)
   const lastError = ref<string | null>(null)
   
@@ -44,9 +50,17 @@ export const useCityData = () => {
 
   const fetchData = async () => {
     try {
-      const response = await fetch(`${config.public.apiUrl}/api/city-state`)
-      if (!response.ok) throw new Error('Failed to fetch city state')
-      data.value = await response.json()
+      const [dataRes, scenariosRes] = await Promise.all([
+        fetch(`${config.public.apiUrl}/api/city-state`),
+        fetch(`${config.public.apiUrl}/api/scenarios`)
+      ])
+      
+      if (!dataRes.ok) throw new Error('Failed to fetch city state')
+      data.value = await dataRes.json()
+      
+      if (scenariosRes.ok) {
+        scenarios.value = await scenariosRes.json()
+      }
     } catch (err: any) {
       lastError.value = err.message
       console.error('Error fetching city data:', err)
@@ -98,6 +112,7 @@ export const useCityData = () => {
 
   return {
     data,
+    scenarios,
     isConnected,
     lastError,
     refresh: fetchData
