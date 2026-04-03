@@ -15,5 +15,11 @@ export default defineNuxtConfig({
     '@nuxt/fonts',
     '@nuxt/image',
     '@vercel/analytics'
-  ]
+  ],
+  runtimeConfig: {
+    public: {
+      wsUrl: process.env.NUXT_PUBLIC_WS_URL || 'ws://localhost:8000/ws/city',
+      apiUrl: process.env.NUXT_PUBLIC_API_URL || 'http://localhost:8000',
+    }
+  }
 });
