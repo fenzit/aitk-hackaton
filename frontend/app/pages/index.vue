@@ -36,8 +36,18 @@
         </a>
         
         <div class="pt-4 mt-4 border-t border-slate-100 dark:border-black-900"></div>
-        
-      </nav>
+                <button 
+            @click="currentTab = 'simulation'" 
+            :class="['w-full group flex items-center gap-3 px-4 py-3 rounded-xl transition-all', currentTab === 'simulation' ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600' : 'text-slate-500 hover:bg-slate-50']"
+          >
+            <div :class="['p-2 rounded-lg transition-colors', currentTab === 'simulation' ? 'bg-emerald-600 text-white' : 'bg-slate-100 group-hover:bg-slate-200']">
+               <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                 <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+               </svg>
+            </div>
+            <span class="font-bold text-lg">Симуляция</span>
+          </button>
+        </nav>
     </aside>
 
     <!-- Main Wrapper -->
@@ -168,33 +178,33 @@
           
           <div class="flex-1 overflow-y-auto p-5 space-y-6 custom-scrollbar scroll-smooth overscroll-contain">
             <div>
-               <h3 class="text-[10px] font-bold text-slate-400 dark:text-black-500 lowercase tracking-widest mb-1.5 opacity-80">что происходит:</h3>
-               <p v-if="cityData" class="text-slate-800 dark:text-black-100 font-bold text-lg leading-tight tracking-tight">
+               <h3 class="text-base font-bold text-slate-400 dark:text-black-500 lowercase tracking-widest mb-2 opacity-80">что происходит:</h3>
+               <p v-if="cityData" class="text-slate-700 dark:text-black-100 font-black text-2xl leading-tight tracking-tight">
                  {{ cityData.insights.problems[0] }}
                </p>
                <p v-else class="text-slate-400 font-bold text-lg">Загрузка данных...</p>
             </div>
             
             <div class="bg-rose-50 dark:bg-rose-950/30 p-4 rounded-2xl border border-rose-100 dark:border-rose-900/50 flex justify-between items-center shadow-sm">
-               <h3 class="text-[10px] font-bold text-rose-500/70 lowercase tracking-widest">насколько критично:</h3>
-               <p v-if="cityData" class="text-rose-600 dark:text-rose-400 font-black flex items-center gap-2">
+               <h3 class="text-base font-bold text-rose-500/70 lowercase tracking-widest">насколько критично:</h3>
+               <p v-if="cityData" class="text-rose-600 dark:text-rose-400 font-black text-2xl flex items-center gap-2">
                  {{ cityData.insights.level_ru.toUpperCase() }} 
-                 <span :class="['w-3 h-3 rounded-full', cityData.insights.level === 'HIGH' ? 'bg-rose-600' : 'bg-amber-500']"></span>
+                 <span :class="['w-5 h-5 rounded-full', cityData.insights.level === 'HIGH' ? 'bg-rose-600' : 'bg-amber-500']"></span>
                </p>
             </div>
             
             <div class="pt-1">
-               <h3 class="text-[10px] font-bold text-slate-400 dark:text-black-500 lowercase tracking-widest mb-3 opacity-80">что делать (ai рекомендация):</h3>
+               <h3 class="text-base font-bold text-slate-400 dark:text-black-500 lowercase tracking-widest mb-4 opacity-80">что делать (ai рекомендация):</h3>
                <ul v-if="cityData" class="space-y-2.5">
                  <li v-for="(action, idx) in cityData.insights.actions" :key="idx" class="flex items-center gap-3 p-3 bg-white dark:bg-black-950/50 border border-slate-200 dark:border-black-800 rounded-xl shadow-sm hover:border-killarney-400 hover:shadow-md transition-all cursor-pointer group">
                    <div class="w-8 h-8 rounded-full bg-killarney-50 dark:bg-killarney-950/30 text-killarney-600 flex items-center justify-center shrink-0 group-hover:bg-killarney-600 group-hover:text-white transition-colors">
                      <svg class="w-5 h-5 border-2 border-transparent rounded-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                    </div>
-                   <span class="text-xs font-bold text-slate-700 dark:text-black-200 group-hover:text-killarney-700 leading-snug">{{ action }}</span>
+                   <span class="text-base font-bold text-slate-700 dark:text-black-200 group-hover:text-killarney-700 leading-snug">{{ action }}</span>
                  </li>
-                 <li class="mt-6 p-4 bg-indigo-50 dark:bg-indigo-950/30 rounded-2xl border border-indigo-100 dark:border-indigo-900/40 shadow-inner">
-                    <p class="text-[10px] font-black text-indigo-500 lowercase tracking-widest mb-2 opacity-80 border-b border-indigo-100/50 dark:border-indigo-900/30 pb-1">llm предсказание:</p>
-                    <p class="text-[11px] font-medium text-slate-700 dark:text-black-200 leading-relaxed italic">"{{ cityData.llm_recommendation }}"</p>
+                 <li class="mt-6 p-4 bg-emerald-50 dark:bg-emerald-950/30 rounded-2xl border border-emerald-100 dark:border-emerald-900/40 shadow-inner">
+                    <p class="text-sm font-black text-emerald-500 lowercase tracking-widest mb-2 opacity-80 border-b border-emerald-100/50 dark:border-emerald-900/30 pb-1">llm предсказание:</p>
+                    <p class="text-base font-medium text-slate-700 dark:text-black-200 leading-relaxed italic">"{{ cityData.llm_recommendation }}"</p>
                  </li>
                </ul>
             </div>
@@ -244,7 +254,7 @@
             </div>
 
             <div class="pt-4 border-t border-slate-100 dark:border-black-900 space-y-2">
-              <h3 class="font-black text-xs text-indigo-500 uppercase tracking-widest">AI-рекомендации</h3>
+              <h3 class="font-black text-xs text-emerald-500 uppercase tracking-widest">AI-рекомендации</h3>
               <p>Языковая модель получает текущий срез данных и формулирует управленческую рекомендацию на естественном языке — не шаблонный текст, а вывод, привязанный к конкретной ситуации в городе прямо сейчас.</p>
             </div>
           </div>
@@ -281,8 +291,6 @@
       </div>
       </div> <!-- End Dashboard Tab -->
 
-
-
       <!-- Ecology Tab -->
       <div v-show="currentTab === 'ecology'" class="space-y-6">
         <div class="flex items-center justify-between mb-4 mt-2">
@@ -294,12 +302,12 @@
         <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div v-for="(kpi, index) in kpis" :key="index" :class="`bg-white dark:bg-black-950 p-6 rounded-xl border-t-4 shadow-sm transition-shadow hover:shadow-md flex flex-col ${kpi.borderColor}`">
             <div class="flex items-start justify-between mb-4">
-              <h3 class="text-sm font-bold text-slate-600 dark:text-black-300 uppercase tracking-wider">{{ kpi.title }}</h3>
+              <h3 class="text-base font-bold text-slate-600 dark:text-black-300 uppercase tracking-wider">{{ kpi.title }}</h3>
             </div>
             <div class="flex items-baseline gap-2">
-              <p :class="`text-3xl font-black ${kpi.textColor}`">{{ kpi.value }}</p>
+              <p :class="`text-4xl font-black ${kpi.textColor}`">{{ kpi.value }}</p>
             </div>
-            <p class="text-xs font-semibold text-slate-500 dark:text-black-400 mt-2 mb-4">{{ kpi.subtitle }}</p>
+            <p class="text-sm font-semibold text-slate-500 dark:text-black-400 mt-2 mb-4">{{ kpi.subtitle }}</p>
             
             <div v-if="kpi.image" class="mt-auto pt-2 overflow-hidden rounded-lg">
               <img :src="kpi.image" alt="KPI visual" class="w-full h-56 object-cover rounded shadow-sm hover:scale-105 transition-transform duration-500" />
@@ -308,57 +316,240 @@
         </section>
 
         <!-- 20 Points Analytics History -->
-        <div class="mt-8 bg-white dark:bg-black-950 p-6 sm:p-8 rounded-2xl border border-slate-200 dark:border-black-800 shadow-sm relative overflow-hidden transition-all hover:border-indigo-300 dark:hover:border-indigo-800/50">
+        <div class="mt-8 bg-white dark:bg-black-950 p-6 sm:p-8 pb-32 rounded-2xl border border-slate-200 dark:border-black-800 shadow-sm relative transition-all hover:border-emerald-300 dark:hover:border-emerald-800/50">
           <div class="flex sm:flex-row flex-col items-start sm:items-center justify-between mb-8 gap-4">
             <div>
-               <h3 class="text-xl font-black text-slate-800 dark:text-black-100 flex items-center gap-3">
-                 <span class="p-2 bg-indigo-50 dark:bg-indigo-950/30 rounded-lg text-indigo-500"><svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" /></svg></span>
-                 История состояний (последние 20 точек)
+               <h3 class="text-xl font-black text-slate-700 dark:text-black-100 flex items-center gap-3">
+                 <span class="p-2 bg-emerald-50 dark:bg-emerald-950/30 rounded-lg text-emerald-500"><svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg></span>
+                 Аналитика проблем (последние 14 дней)
                </h3>
-               <p class="text-sm text-slate-500 dark:text-black-400 mt-2 font-medium">Динамика изменения уровня выбросов и загруженности во времени.</p>
+               <p class="text-sm text-slate-500 dark:text-black-400 mt-2 font-medium">Самые значимые проблемы города по дням и их критичность в процентах.</p>
             </div>
-            <div class="bg-indigo-50 dark:bg-indigo-950/30 text-indigo-600 px-4 py-2 rounded-xl text-xs font-bold border border-indigo-200 dark:border-indigo-800/50 uppercase tracking-widest flex items-center gap-2">
-               <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
-               Аналитика активна
+            <div class="bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 px-4 py-2 rounded-xl text-xs font-bold border border-emerald-200 dark:border-emerald-800/50 uppercase tracking-widest flex items-center gap-2">
+               <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+               Архив данных активен
             </div>
           </div>
           
-          <div class="h-64 w-full relative group">
+          <div class="h-64 w-full flex items-end justify-between gap-1 sm:gap-2 px-2 relative z-10 mt-8 group/chart">
              <!-- Background Grid Lines -->
-             <div class="absolute inset-x-0 inset-y-6 flex flex-col justify-between opacity-30 pointer-events-none z-0">
-               <div class="border-b border-slate-300 dark:border-black-700 w-full border-dashed"></div>
-               <div class="border-b border-slate-300 dark:border-black-700 w-full border-dashed"></div>
-               <div class="border-b border-slate-300 dark:border-black-700 w-full border-dashed"></div>
-               <div class="border-b border-slate-300 dark:border-black-700 w-full border-dashed"></div>
+             <div class="absolute inset-x-0 inset-y-0 flex flex-col justify-between opacity-10 pointer-events-none z-0">
+                <div class="border-b border-slate-300 dark:border-black-700 w-full border-dashed"></div>
+                <div class="border-b border-slate-300 dark:border-black-700 w-full border-dashed"></div>
+                <div class="border-b border-slate-300 dark:border-black-700 w-full border-dashed"></div>
+                <div class="border-b border-slate-300 dark:border-black-700 w-full border-dashed"></div>
              </div>
-             
-             <!-- Reactive Bars derived from chart1Data -->
-             <div class="w-full h-full flex items-end justify-between px-1 pb-6 gap-1 sm:gap-2 relative z-10">
-                <div v-for="(val, idx) in chart1Data.slice(-20)" :key="idx" class="w-full h-full relative group/bar flex items-end justify-center">
-                   <!-- Tooltip -->
-                   <div class="absolute bottom-full mb-2 opacity-0 group-hover/bar:opacity-100 transition-opacity bg-slate-800 text-white text-[11px] font-bold py-1.5 px-2.5 rounded-lg whitespace-nowrap shadow-xl pointer-events-none z-20">
-                     Значение: {{ val }}
-                     <svg class="absolute text-slate-800 h-2 w-full left-0 top-full" x="0px" y="0px" viewBox="0 0 255 255" xml:space="preserve"><polygon class="fill-current" points="0,0 127.5,127.5 255,0"/></svg>
+
+             <!-- 14 Interactive Bars -->
+             <div 
+               v-for="(day, idx) in historicalStats.slice().reverse()" 
+               :key="idx" 
+               class="flex-1 h-full flex flex-col justify-end relative group/bar cursor-pointer"
+             >
+                <!-- Tooltip (below bar) -->
+                <div class="absolute top-full mt-4 left-1/2 -translate-x-1/2 w-48 opacity-0 group-hover/bar:opacity-100 transition-all duration-300 z-50 pointer-events-none transform -translate-y-2 group-hover/bar:translate-y-0 scale-95 group-hover/bar:scale-100">
+                   <div class="bg-slate-900/95 dark:bg-black-900/95 backdrop-blur-md text-white p-4 rounded-2xl text-[12px] border border-white/10 flex flex-col gap-1.5 items-center text-center shadow-2xl relative">
+                      <!-- Arrow (top) -->
+                      <div class="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-slate-900 rotate-45 border-t border-l border-white/10"></div>
+                      
+                      <span class="font-black text-slate-400 uppercase tracking-widest text-[10px]">{{ day.date }}</span>
+                      <span class="font-black text-sm leading-tight">{{ day.problem }}</span>
+                      <span :class="['font-black text-lg', day.color]">{{ day.percentage }}%</span>
+                      
+                      <div class="w-full pt-2 border-t border-white/10 mt-1">
+                        <p class="text-[9px] font-black text-emerald-400 uppercase tracking-widest mb-1 text-left">Решения AI:</p>
+                        <div class="flex flex-col gap-1 items-start text-left">
+                           <div v-for="(rec, rIdx) in day.recommendations" :key="'rec-'+rIdx" class="flex items-start gap-1.5">
+                              <span class="w-1 h-1 rounded-full bg-killarney-500 mt-1.5 shrink-0"></span>
+                              <span class="text-[11px] font-bold text-slate-200 leading-tight">{{ rec }}</span>
+                           </div>
+                        </div>
+                      </div>
                    </div>
-                   <!-- Value Bar -->
-                   <div class="w-full bg-gradient-to-t from-indigo-600 to-sky-400 rounded-md transition-all duration-700 ease-in-out group-hover/bar:from-sky-400 group-hover/bar:to-sky-300 group-hover/bar:-translate-y-1" :style="{height: `${val}%`}"></div>
+                </div>
+
+                <!-- The Bar -->
+                <div 
+                  :class="['w-full rounded-t-lg transition-all duration-700 ease-out group-hover/bar:brightness-110 group-hover/bar:-translate-y-1', day.color.replace('text-', 'bg-')]" 
+                  :style="{ height: `${day.percentage}%` }"
+                >
+                   <!-- Subtle Shine effect on bar -->
+                   <div class="w-full h-full bg-gradient-to-b from-white/20 to-transparent opacity-50"></div>
                 </div>
              </div>
-             
-             <!-- X-Axis Labels -->
-             <div class="absolute bottom-0 left-0 right-0 flex justify-between text-[11px] font-bold text-slate-400 dark:text-black-500 uppercase tracking-widest px-2">
-               <span>-20 циклов</span>
-               <span class="hidden sm:inline">-15</span>
-               <span>-10</span>
-               <span class="hidden sm:inline">-5</span>
-               <span class="text-indigo-500">Сейчас</span>
+          </div>
+          
+          <!-- X-Axis Labels (Date sampling) -->
+          <div class="flex justify-between text-[11px] font-black text-slate-400 dark:text-black-500 uppercase tracking-widest px-4 mt-4 relative">
+             <div v-for="(day, idx) in historicalStats.slice().reverse()" :key="'label-'+idx" class="flex-1 text-center">
+                {{ day.day }}
+             </div>
+          </div>
+          
+          <!-- Month Indicators -->
+          <div class="flex px-4 mt-2">
+             <div class="flex-[11] text-center border-t border-slate-200 dark:border-black-800 pt-2">
+                <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Март</span>
+             </div>
+             <div class="flex-[3] text-center border-t border-emerald-200 dark:border-emerald-900 pt-2">
+                <span class="text-[9px] font-black text-emerald-500 uppercase tracking-widest">Апрель</span>
              </div>
           </div>
         </div>
       </div>
 
-      <!-- Analytics Tab -->
-      <div v-show="currentTab === 'analytics'" class="space-y-6">
+       <!-- Simulation Tab -->
+       <div v-show="currentTab === 'simulation'" class="space-y-6">
+         <div class="flex items-center justify-between mb-8">
+           <div>
+              <h2 class="text-3xl font-black text-slate-700 dark:text-black-100 tracking-tight flex items-center gap-3">
+                 <div class="p-2 bg-emerald-600 rounded-xl text-white shadow-lg shadow-emerald-500/20">
+                    <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                      <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                      <line x1="12" y1="22.08" x2="12" y2="12"/>
+                    </svg>
+                 </div>
+                 Симуляция "Цифровой Двойник"
+              </h2>
+              <p class="text-slate-400 font-bold mt-2 ml-14">Инструмент прогнозирования и принятия решений на базе ИИ</p>
+           </div>
+           
+           <div class="bg-emerald-500/10 text-emerald-600 px-6 py-3 rounded-2xl border border-emerald-200 dark:border-emerald-800 flex items-center gap-3 animate-pulse">
+              <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+              <span class="text-xs font-black uppercase tracking-widest">Модель загружена</span>
+           </div>
+         </div>
+
+         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <!-- Control Panel -->
+            <div class="lg:col-span-5 space-y-6">
+               <div class="bg-white dark:bg-black-950 p-8 rounded-[2rem] border border-slate-200 dark:border-black-800 shadow-xl relative overflow-hidden">
+                  <div class="relative z-10">
+                     <h3 class="text-sm font-black text-slate-400 uppercase tracking-widest mb-6">Выбор Сценариев</h3>
+                     
+                     <div class="space-y-4">
+                        <label v-for="(scenario, sIdx) in ['Закрыть дорогу (центр)', 'Увеличить общ. транспорт', 'Ограничить личный транспорт']" :key="sIdx" class="flex items-center group cursor-pointer">
+                           <div class="relative flex items-center justify-center">
+                              <input type="checkbox" v-model="selectedScenarios[sIdx]" class="peer sr-only">
+                              <div class="w-7 h-7 bg-slate-100 dark:bg-black-900 border-2 border-slate-200 dark:border-black-800 rounded-lg transition-all peer-checked:bg-emerald-600 peer-checked:border-emerald-600 group-hover:border-emerald-400"></div>
+                              <svg class="absolute w-4 h-4 text-white opacity-0 peer-checked:opacity-100 transition-opacity" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                           </div>
+                           <div class="ml-4">
+                              <span class="text-lg font-bold text-slate-600 dark:text-black-100 group-hover:text-emerald-600 transition-colors">{{ scenario }}</span>
+                           </div>
+                        </label>
+                     </div>
+
+                     <button 
+                        @click="runSimulation" 
+                        :disabled="scIsRunning"
+                        class="w-full mt-10 py-5 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 text-white font-black text-xl rounded-2xl transition-all shadow-xl shadow-emerald-500/20 active:scale-95 flex items-center justify-center gap-3"
+                     >
+                        <svg v-if="!scIsRunning" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        <div v-else class="w-6 h-6 border-4 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        {{ scIsRunning ? 'Просчет модели...' : 'Запустить Симуляцию' }}
+                     </button>
+                  </div>
+                  
+                  <!-- Abstract Background Pattern -->
+                  <div class="absolute -right-10 -bottom-10 opacity-[0.03] dark:opacity-[0.07] pointer-events-none">
+                     <svg class="w-64 h-64" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                     </svg>
+                  </div>
+               </div>
+
+               <!-- AI Insight Panel -->
+               <div v-if="simulationResult" class="bg-emerald-900 text-white p-8 rounded-[2rem] shadow-2xl relative overflow-hidden transition-all duration-700 animate-in fade-in slide-in-from-bottom-5">
+                  <div class="relative z-10">
+                     <div class="flex items-center gap-3 mb-6 border-b border-white/10 pb-4">
+                        <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center">
+                           <svg class="w-6 h-6 text-emerald-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+                        </div>
+                        <h3 class="text-sm font-black uppercase tracking-widest text-emerald-200">AI Рекомендация</h3>
+                     </div>
+                     <p class="text-2xl font-black leading-tight mb-4 tracking-tight">Лучшее решение → <span class="text-emerald-300">Увеличить общественный транспорт</span></p>
+                     <p class="text-emerald-100/70 font-medium leading-relaxed">Модель подтверждает, что при текущих вводных данный сценарий дает максимальный эффект при минимальных бюджетных затратах.</p>
+                  </div>
+                  <div class="absolute -right-20 -top-20 w-64 h-64 bg-emerald-500 rounded-full blur-[100px] opacity-20"></div>
+               </div>
+            </div>
+
+            <!-- Result Panel -->
+            <div class="lg:col-span-7">
+               <div class="bg-slate-50 dark:bg-black-900/40 border border-slate-200 dark:border-black-800 rounded-[2.5rem] p-10 h-full min-h-[500px] relative flex flex-col items-center justify-center">
+                  <div v-if="!simulationResult && !isSimulating" class="text-center space-y-4">
+                     <div class="w-20 h-20 bg-slate-200 dark:bg-black-800 rounded-3xl mx-auto flex items-center justify-center text-slate-400 transition-all hover:scale-110">
+                        <svg class="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                     </div>
+                     <p class="text-xl font-bold text-slate-400">Запустите симуляцию для получения результата</p>
+                  </div>
+
+                  <div v-if="scIsRunning" class="space-y-8 flex flex-col items-center">
+                     <div class="relative w-48 h-48">
+                        <div class="absolute inset-0 border-8 border-emerald-600/10 rounded-full"></div>
+                        <div class="absolute inset-0 border-8 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
+                        <div class="absolute inset-0 flex items-center justify-center font-black text-2xl text-emerald-600 animate-pulse">43%</div>
+                     </div>
+                     <p class="text-lg font-black text-slate-500 animate-pulse tracking-widest uppercase">Моделирование городской среды...</p>
+                  </div>
+
+                  <div v-if="simulationResult" class="w-full space-y-10 transition-all duration-1000 animate-in zoom-in-95">
+                     <div class="grid grid-cols-2 gap-8">
+                        <div class="bg-white dark:bg-black-950 p-8 rounded-[2rem] shadow-xl border border-slate-100 dark:border-black-800 transition-all hover:shadow-2xl hover:-translate-y-1 group">
+                           <div class="flex items-center gap-4 mb-4">
+                              <div class="p-3 bg-amber-500/10 rounded-2xl text-amber-500 group-hover:bg-amber-500 group-hover:text-white transition-all">
+                                 <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-1.1 0-2 .9-2 2v7c0 1.1.9 2 2 2h10"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/></svg>
+                              </div>
+                              <span class="text-sm font-black text-slate-500/70 uppercase tracking-widest">Пробки</span>
+                           </div>
+                           <div class="flex items-end gap-3 font-black text-slate-700 dark:text-black-100">
+                              <span class="text-5xl">↓ 25</span>
+                              <span class="text-2xl mb-1.5 opacity-50">%</span>
+                           </div>
+                           <div class="h-1.5 w-full bg-slate-100 dark:bg-black-900 rounded-full mt-6 overflow-hidden">
+                              <div class="h-full bg-amber-500 w-1/4 rounded-full transition-all duration-1000"></div>
+                           </div>
+                        </div>
+
+                        <div class="bg-white dark:bg-black-950 p-8 rounded-[2rem] shadow-xl border border-slate-100 dark:border-black-800 transition-all hover:shadow-2xl hover:-translate-y-1 group">
+                           <div class="flex items-center gap-4 mb-4">
+                              <div class="p-3 bg-rose-500/10 rounded-2xl text-rose-500 group-hover:bg-rose-500 group-hover:text-white transition-all">
+                                 <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17.5 19c.7-1.2 1.1-2.6 1.1-4 0-4.4-3.6-8-8-8s-8 3.6-8 8c0 1.4.4 2.8 1.1 4"/><path d="M22 17c.7-1.2 1.1-2.6 1.1-4 0-4.4-3.6-8-8-8s-8 3.6-8 8c0 1.4.4 2.8 1.1 4"/><path d="M12 11a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/><path d="M12 21a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/></svg>
+                              </div>
+                              <span class="text-sm font-black text-slate-400 uppercase tracking-widest">Воздух</span>
+                           </div>
+                           <div class="flex items-end gap-3 font-black text-slate-700 dark:text-black-100">
+                              <span class="text-5xl">↓ 18</span>
+                              <span class="text-2xl mb-1.5 opacity-50">%</span>
+                           </div>
+                           <div class="h-1.5 w-full bg-slate-100 dark:bg-black-900 rounded-full mt-6 overflow-hidden">
+                              <div class="h-full bg-rose-500 w-1/5 rounded-full transition-all duration-1000"></div>
+                           </div>
+                        </div>
+                     </div>
+
+                     <div class="bg-emerald-500/10 dark:bg-emerald-500/5 border border-emerald-500/20 p-8 rounded-[2rem] flex items-center justify-between">
+                        <div class="flex items-center gap-4">
+                           <div class="w-12 h-12 bg-emerald-500 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-emerald-500/30">
+                              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                           </div>
+                           <div>
+                              <p class="text-xl font-black text-slate-800 dark:text-black-100">Симуляция завершена</p>
+                              <p class="font-bold text-slate-500">Модель прогноза: CityBrain v4.2</p>
+                           </div>
+                        </div>
+                        <button @click="simulationResult = null" class="px-6 py-3 bg-white dark:bg-black-800 border border-slate-200 dark:border-black-700 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-slate-50 transition-all">Сбросить</button>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+       </div>
+
+       <!-- Analytics Tab -->
+       <div v-show="currentTab === 'analytics'" class="space-y-6">
         <div class="flex items-center justify-between mb-4 mt-2">
           <h2 class="text-2xl font-black text-slate-800 dark:text-black-100 tracking-tight flex items-center gap-3">
              <svg class="w-7 h-7 text-killarney-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -369,12 +560,12 @@
              Аналитика
           </h2>
           
-          <div class="flex items-center gap-2 bg-indigo-50 dark:bg-indigo-950/30 px-4 py-2 rounded-xl border border-indigo-200 dark:border-indigo-800/50">
+          <div class="flex items-center gap-2 bg-emerald-50 dark:bg-emerald-950/30 px-4 py-2 rounded-xl border border-emerald-200 dark:border-emerald-800/50">
             <span class="relative flex h-2 w-2">
-              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-              <span class="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
             </span>
-            <span class="text-[10px] font-black text-indigo-600 uppercase tracking-widest">Прогноз активен</span>
+            <span class="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Прогноз активен</span>
           </div>
         </div>
 
@@ -399,22 +590,22 @@
                   hoveredScenario === key ? 'bg-killarney-50 dark:bg-killarney-900/30' : 'bg-slate-100 dark:bg-black-900'
                 ]">
                   <div v-if="key === 'close_road'" :class="['w-2.5 h-2.5 rounded-full', hoveredScenario === key ? 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.4)]' : 'bg-rose-500/60']"></div>
-                  <div v-else-if="key === 'increase_buses'" :class="['w-2.5 h-2.5 rounded-sm', hoveredScenario === key ? 'bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.4)]' : 'bg-indigo-500/60']"></div>
+                  <div v-else-if="key === 'increase_buses'" :class="['w-2.5 h-2.5 rounded-sm', hoveredScenario === key ? 'bg-emerald-500 shadow-[0_0_8px_rgba(99,102,241,0.4)]' : 'bg-emerald-500/60']"></div>
                   <div v-else-if="key === 'restrict_diesel'" :class="['w-2.5 h-2.5 rotate-45 rounded-[1px]', hoveredScenario === key ? 'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.4)]' : 'bg-amber-500/60']"></div>
                   <div v-else-if="key === 'green_wave'" :class="['w-3 h-1 rounded-full', hoveredScenario === key ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]' : 'bg-emerald-500/60']"></div>
                   <div v-else :class="['w-2.5 h-2.5 rounded-full bg-slate-400']"></div>
                 </div>
                 
-                <div v-if="hoveredScenario === key" class="bg-killarney-50 dark:bg-killarney-900/40 px-2.5 py-1 rounded-md text-[7px] font-black text-killarney-600 dark:text-killarney-400 uppercase tracking-[0.1em] border border-killarney-100 dark:border-killarney-800">
+                <div v-if="hoveredScenario === key" class="bg-killarney-50 dark:bg-killarney-900/40 px-2.5 py-1 rounded-md text-[10px] font-black text-killarney-600 dark:text-killarney-400 uppercase tracking-[0.1em] border border-killarney-100 dark:border-killarney-800">
                   Forecast
                 </div>
               </div>
               
-              <h3 :class="['font-black text-[10px] uppercase tracking-widest mb-2 relative z-10 transition-colors', hoveredScenario === key ? 'text-slate-900 dark:text-white' : 'text-slate-700 dark:text-black-200']">
+              <h3 :class="['font-black text-xs uppercase tracking-widest mb-2 relative z-10 transition-colors', hoveredScenario === key ? 'text-slate-900 dark:text-white' : 'text-slate-700 dark:text-black-200']">
                 {{ scenario.label }}
               </h3>
               
-              <p :class="['text-[9px] font-medium leading-relaxed relative z-10 transition-colors', hoveredScenario === key ? 'text-slate-600 dark:text-black-300' : 'text-slate-500 dark:text-black-400']">
+              <p :class="['text-[11px] font-medium leading-relaxed relative z-10 transition-colors', hoveredScenario === key ? 'text-slate-600 dark:text-black-300' : 'text-slate-500 dark:text-black-400']">
                 {{ scenario.prediction }}
               </p>
            </div>
@@ -427,7 +618,7 @@
           <div class="flex justify-between items-center mb-6">
             <h3 class="font-bold text-slate-800 dark:text-black-100">Трафик со временем</h3>
             <div class="flex items-center gap-3">
-              <div v-if="hoveredScenario" class="flex items-center gap-2 text-[10px] font-black text-indigo-500 bg-indigo-50 dark:bg-indigo-950/30 px-2 py-1 rounded-lg border border-indigo-200 animate-pulse">
+              <div v-if="hoveredScenario" class="flex items-center gap-2 text-xs font-black text-emerald-500 bg-emerald-50 dark:bg-emerald-950/30 px-2 py-1 rounded-lg border border-emerald-200 animate-pulse">
                 <span>ПРЕДИКТИВНАЯ ГИПОТЕЗА</span>
               </div>
             </div>
@@ -436,45 +627,43 @@
           <div class="h-64 relative overflow-hidden flex flex-col pb-2 mt-4">
              <div class="flex-1 w-full relative">
                <svg viewBox="0 0 400 150" class="w-full h-full preserve-3d absolute inset-0" preserveAspectRatio="none">
-                 <defs>
-                    <linearGradient id="trafficGradient" x1="0" y1="0" x2="0" y2="1">
-                       <stop offset="0%" stop-color="#6366f1" stop-opacity="0.25"/>
-                       <stop offset="100%" stop-color="#6366f1" stop-opacity="0"/>
-                    </linearGradient>
-                    <linearGradient id="predictionGradient" x1="0" y1="0" x2="0" y2="1">
-                       <stop offset="0%" stop-color="#f43f5e" stop-opacity="0.2"/>
-                       <stop offset="100%" stop-color="#f43f5e" stop-opacity="0"/>
-                    </linearGradient>
-                 </defs>
+                 <!-- Main curve (Active) -->
+                 <path :d="trafficPathMain" fill="none" class="stroke-emerald-500 transition-all duration-700 ease-in-out" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
                  
-                 <!-- Area Fill (Active) -->
-                 <path :d="trafficPath" fill="url(#trafficGradient)" class="transition-all duration-700 ease-in-out" />
-                 
-                 <!-- Prediction Path (Visible on Hover) -->
-                 <path 
-                   v-if="hoveredScenario" 
-                   :d="trafficPredictionPath" 
-                   fill="url(#predictionGradient)" 
-                   class="animate-pulse"
+                 <!-- Data Markers -->
+                 <circle 
+                   v-for="(p, i) in trafficPoints" 
+                   :key="'t-'+i" 
+                   :cx="p.x" 
+                   :cy="p.y" 
+                   r="5" 
+                   class="fill-emerald-500 transition-all duration-700 ease-in-out" 
                  />
-                 
-                 <!-- Solid curve (Active) -->
-                 <path :d="trafficPathMain" fill="none" class="stroke-indigo-500 transition-all duration-700 ease-in-out" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
-                 
+
                  <!-- Solid prediction curve -->
                  <path 
                    v-if="hoveredScenario" 
                    :d="trafficPredictionPathMain" 
                    fill="none" 
-                   class="stroke-rose-500 stroke-dasharray-4 transition-all duration-500" 
-                   stroke-width="3" 
+                   class="stroke-rose-500 transition-all duration-500" 
+                   stroke-width="5" 
                    stroke-linecap="round" 
-                   stroke-dasharray="8 4"
+                   stroke-dasharray="10 6"
+                 />
+                 <!-- Prediction Markers -->
+                 <circle 
+                   v-if="hoveredScenario"
+                   v-for="(p, i) in trafficPredictionPoints" 
+                   :key="'tp-'+i" 
+                   :cx="p.x" 
+                   :cy="p.y" 
+                   r="4" 
+                   class="fill-rose-500 transition-all duration-500" 
                  />
                </svg>
              </div>
              <!-- X-Axis Labels -->
-             <div class="flex justify-between text-xs text-slate-400 dark:text-black-500 font-bold z-10 px-1 mt-2">
+             <div class="flex justify-between text-sm text-slate-400 dark:text-black-500 font-bold z-10 px-1 mt-2">
                <span>00:00</span>
                <span>06:00</span>
                <span>12:00</span>
@@ -489,7 +678,7 @@
           <div class="flex justify-between items-center mb-6">
             <h3 class="font-bold text-slate-800 dark:text-black-100">Качество воздуха (AQI)</h3>
             <div class="flex items-center gap-3">
-              <div v-if="hoveredScenario" class="flex items-center gap-2 text-[10px] font-black text-emerald-500 bg-emerald-50 dark:bg-emerald-950/30 px-2 py-1 rounded-lg border border-emerald-200 animate-pulse">
+              <div v-if="hoveredScenario" class="flex items-center gap-2 text-xs font-black text-emerald-500 bg-emerald-50 dark:bg-emerald-950/30 px-2 py-1 rounded-lg border border-emerald-200 animate-pulse">
                 <span>ЭКО-ПРОГНОЗ</span>
               </div>
               <span class="flex items-center gap-1.5 text-xs font-bold text-amber-500 bg-amber-50 dark:bg-amber-950/30 px-2 py-1 rounded-md">
@@ -536,7 +725,7 @@
                </svg>
              </div>
              <!-- X-Axis Labels (Days) -->
-             <div class="flex justify-between text-xs text-slate-400 dark:text-black-500 font-bold z-10 px-1 mt-2">
+             <div class="flex justify-between text-sm text-slate-400 dark:text-black-500 font-bold z-10 px-1 mt-2">
                <span>Пн</span>
                <span>Вт</span>
                <span>Ср</span>
@@ -571,6 +760,36 @@ const isMapFullscreen = ref(false)
 const isAIPanelVisible = ref(true)
 const currentTab = ref('dashboard')
 const colorMode = useColorMode()
+
+const historicalStats = ref([
+  { date: '3 апреля', day: '3', problem: 'Загрязнение воздуха', percentage: 50, type: 'air', color: 'text-rose-500', bg: 'bg-rose-500/10', recommendations: ['Зеленая волна', 'Влажная уборка', 'Эко-патруль'] },
+  { date: '2 апреля', day: '2', problem: 'Пробки (Traffic)', percentage: 75, type: 'traffic', color: 'text-amber-500', bg: 'bg-amber-500/10', recommendations: ['Оптимизация светофоров', 'Объездной путь', 'Приоритет ОТ'] },
+  { date: '1 апреля', day: '1', problem: 'Загрязнение воздуха', percentage: 30, type: 'air', color: 'text-rose-500', bg: 'bg-rose-500/10', recommendations: ['Мониторинг жилых зон', 'Озеленение', 'Ограничение дизеля'] },
+  { date: '31 марта', day: '31', problem: 'Пробки (Traffic)', percentage: 45, type: 'traffic', color: 'text-amber-500', bg: 'bg-amber-500/10', recommendations: ['Инфо-щиты (Traffic)', 'Запрет на грузовой транспорт'] },
+  { date: '30 марта', day: '30', problem: 'Загразнение воздуха', percentage: 82, type: 'air', color: 'text-rose-500', bg: 'bg-rose-500/10', recommendations: ['Ограничение промзон', 'Оповещение жителей', 'Платный въезд'] },
+  { date: '29 марта', day: '29', problem: 'Пробки (Traffic)', percentage: 90, type: 'traffic', color: 'text-amber-500', bg: 'bg-amber-500/10', recommendations: ['Работа из дома (рекомендация)', 'Умная диспетчеризация'] },
+  { date: '28 марта', day: '28', problem: 'Загрязнение воздуха', percentage: 40, type: 'air', color: 'text-rose-500', bg: 'bg-rose-500/10', recommendations: ['Раздельный сбор мусора', 'Велодорожки'] },
+  { date: '27 марта', day: '27', problem: 'Загрязнение воздуха', percentage: 65, type: 'air', color: 'text-rose-500', bg: 'bg-rose-500/10', recommendations: ['Снижение эко-налога', 'Эко-автобусы'] },
+  { date: '26 марта', day: '26', problem: 'Пробки (Traffic)', percentage: 55, type: 'traffic', color: 'text-amber-500', bg: 'bg-amber-500/10', recommendations: ['Реверсивное движение', 'Парковки перехваты'] },
+  { date: '25 марта', day: '25', problem: 'Пробки (Traffic)', percentage: 60, type: 'traffic', color: 'text-amber-500', bg: 'bg-amber-500/10', recommendations: ['Каршеринг (содействие)', 'Выделенные полосы'] },
+  { date: '24 марта', day: '24', problem: 'Загрязнение воздуха', percentage: 88, type: 'air', color: 'text-rose-500', bg: 'bg-rose-500/10', recommendations: ['ЧС Экология', 'Стоп-завод', 'Фильтры воздуха'] },
+  { date: '23 марта', day: '23', problem: 'Пробки (Traffic)', percentage: 95, type: 'traffic', color: 'text-amber-500', bg: 'bg-amber-500/10', recommendations: ['Полный приоритет ОТ', 'Ограничение выезда'] },
+  { date: '22 марта', day: '22', problem: 'Загрязнение воздуха', percentage: 35, type: 'air', color: 'text-rose-500', bg: 'bg-rose-500/10', recommendations: ['Благоустройство', 'Уборка территорий'] },
+  { date: '21 марта', day: '21', problem: 'Пробки (Traffic)', percentage: 50, type: 'traffic', color: 'text-amber-500', bg: 'bg-amber-500/10', recommendations: ['Вело-инфраструктура', 'Пешеходные зоны'] }
+])
+
+const selectedScenarios = ref([false, false, false])
+const scIsRunning = ref(false)
+const simulationResult = ref(null)
+
+const runSimulation = () => {
+  scIsRunning.value = true
+  setTimeout(() => {
+    scIsRunning.value = false
+    simulationResult.value = true
+  }, 2500)
+}
+
 let mapInstance = null
 let mapTileLayer = null
 
