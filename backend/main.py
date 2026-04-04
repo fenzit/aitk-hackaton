@@ -132,7 +132,7 @@ def analyze(metrics: dict, city: CityState) -> dict:
 
 async def city_data_loop():
     while True:
-        await asyncio.sleep(3)
+        await asyncio.sleep(20)
         
         for name, city in city_states.items():
             metrics = generate_metrics(city)
