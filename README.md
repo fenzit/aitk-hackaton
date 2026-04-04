@@ -72,6 +72,7 @@ cd aitk-hackaton
 docker-compose up --build
 ```
 
+FrontEnd: `http://localhost:3001`
 API доступен на `http://localhost:8000`  
 WebSocket: `ws://localhost:8000/ws/city`  
 Документация: `http://localhost:8000/docs`
