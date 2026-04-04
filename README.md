@@ -45,7 +45,7 @@ CityMind AI — не дашборд с графиками. Это **цифров
 ## Архитектура
 
 ```
-Фронтенд (React)
+Фронтенд (Vue.js)
     │
     │  WebSocket — поток данных каждые 3 сек
     ▼
@@ -125,7 +125,7 @@ WebSocket: `ws://localhost:8000/ws/city`
 - **Backend:** Python 3.11, FastAPI, WebSocket, asyncio
 - **AI:** Rule-based engine + LLM интеграция
 - **Deploy:** Docker, docker-compose
-- **Frontend:** React, Recharts, Leaflet
+- **Frontend:** Vue.js, Recharts, Leaflet
 
 ---
 
