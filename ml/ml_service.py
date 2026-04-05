@@ -8,6 +8,7 @@ import json
 import time
 import random
 import os
+import httpx
 from datetime import datetime
 
 
@@ -323,10 +324,20 @@ def main():
 
         # В конце цикла, после вычисления insight:
         try:
-            text = f"{insight['level_ru']} уровень. {insight['problems'][0]}. Рекомендация: {insight['actions'][0]}"
             httpx.post(
-                f"{BACKEND_URL}/internal/llm-insight",
-                json={"text": text},
+                f"{BACKEND_URL}/internal/ml-insight",
+                json={
+                    "city": "Алматы",
+                    "level": insight["level"],
+                    "level_ru": insight["level_ru"],
+                    "city_health_score": insight["city_health_score"],
+                    "composite_score": insight["composite_score"],
+                    "problems": insight["problems"],
+                    "actions": insight["actions"],
+                    "causal_link": insight["causal_link"],
+                    "is_simulation": insight["is_simulation"],
+                    "llm_text": f"{insight['level_ru']} уровень. {insight['problems'][0]}. Рекомендация: {insight['actions'][0]}",
+                },
                 timeout=5,
             )
             print(f"✅ Отправлено на бэк")

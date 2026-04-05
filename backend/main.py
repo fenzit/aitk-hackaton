@@ -36,7 +36,8 @@ class CityState:
         self.simulation_mode: Optional[dict] = None
         self.simulation_until: float = 0
         self.llm_insight = "Система анализирует данные..."
-        
+        self.ml_analysis = None  # populated by /internal/ml-insight
+
         # Разные базовые показатели для реализма
         if name == "Алматы":
             self.base_traffic = 65
@@ -142,8 +143,9 @@ async def city_data_loop():
                 "city": name,
                 "timestamp": time.time(),
                 "metrics": metrics,
-                "insights": insights,
+                "insights": city.ml_analysis if city.ml_analysis else insights,
                 "llm_recommendation": city.llm_insight,
+                "ml_analysis": city.ml_analysis,
                 "history": list(city.history)[-20:],
             }
 
@@ -190,8 +192,9 @@ async def websocket_city(websocket: WebSocket, city: str = "Алматы"):
         "city": city,
         "timestamp": time.time(),
         "metrics": metrics,
-        "insights": insights,
+        "insights": cs.ml_analysis if cs.ml_analysis else insights,
         "llm_recommendation": cs.llm_insight,
+        "ml_analysis": cs.ml_analysis,
         "history": list(cs.history)[-20:],
     }, ensure_ascii=False))
 
@@ -213,8 +216,9 @@ def city_state(city: str = "Алматы"):
         "city": city,
         "timestamp": time.time(),
         "metrics": metrics,
-        "insights": insights,
+        "insights": cs.ml_analysis if cs.ml_analysis else insights,
         "llm_recommendation": cs.llm_insight,
+        "ml_analysis": cs.ml_analysis,
         "history": list(cs.history)[-20:],
     }
 
@@ -242,6 +246,35 @@ def simulate(req: SimulateRequest):
 @app.get("/api/scenarios")
 def get_scenarios():
     return {k: {"label": v["label"], "prediction": v["prediction"]} for k,v in SIMULATION_SCENARIOS.items()}
+
+class MLInsightRequest(BaseModel):
+    city: str = "Алматы"
+    level: str = ""
+    level_ru: str = ""
+    city_health_score: int = 0
+    composite_score: float = 0
+    problems: list = []
+    actions: list = []
+    causal_link: Optional[str] = None
+    is_simulation: bool = False
+    llm_text: str = ""
+
+@app.post("/internal/ml-insight")
+def receive_ml_insight(req: MLInsightRequest):
+    city_name = req.city if req.city in city_states else "Алматы"
+    cs = city_states[city_name]
+    cs.llm_insight = req.llm_text
+    cs.ml_analysis = {
+        "level": req.level,
+        "level_ru": req.level_ru,
+        "city_health_score": req.city_health_score,
+        "composite_score": req.composite_score,
+        "problems": req.problems,
+        "actions": req.actions,
+        "causal_link": req.causal_link,
+        "is_simulation": req.is_simulation,
+    }
+    return {"status": "ok"}
 
 @app.get("/health")
 def health():

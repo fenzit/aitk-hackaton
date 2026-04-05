@@ -12,10 +12,9 @@ export default defineNuxtConfig({
   modules: [
     '@nuxt/a11y',
     '@nuxt/eslint',
-    '@nuxt/fonts',
     '@nuxt/image',
     '@nuxtjs/color-mode',
-    '@vercel/analytics'
+    ...(process.env.VERCEL ? ['@vercel/analytics'] : [])
   ],
   colorMode: {
     classSuffix: ''
